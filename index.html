@@ -209,7 +209,7 @@ footer{margin-top:40px;color:var(--muted);font-size:14px;border-top:1px solid va
   <h1>The Optics Lab</h1>
   <p class="byline">Created by Steven C. Quan, OD, FAAO</p>
   <p class="intro-short">Pick a demo, load a problem, predict, then reveal.</p>
-  <p class="intro">Eight interactive demos for the Optics 1 and Optics 2 OKAP sessions. The tabs are numbered in a suggested order: each demo builds on the far point idea from the one before.</p>
+  <p class="intro">Nine interactive demos for the Optics 1 and Optics 2 OKAP sessions. The tabs are numbered in a suggested order, from refraction through prisms.</p>
   <ol class="how">
     <li><b>Pick a demo</b> and load a practice problem. Its full statement appears above the controls.</li>
     <li><b>Predict</b> the answer. Turn on predict mode to hide results until you commit.</li>
@@ -253,39 +253,98 @@ footer{margin-top:40px;color:var(--muted);font-size:14px;border-top:1px solid va
 <label class="demo-picker"><span>Demo</span>
 <select id="demoSelect" aria-label="Choose a demo">
   <optgroup label="Optics 1">
-    <option value="o1">1. Far point and accommodation</option>
-    <option value="o2">2. Retinoscopy</option>
-    <option value="o3">3. Duochrome</option>
-    <option value="o4">4. Telescopes and magnifiers</option>
+    <option value="o0">1. Snell's law</option>
+    <option value="o1">2. Far point and accommodation</option>
+    <option value="o2">3. Retinoscopy</option>
+    <option value="o3">4. Duochrome</option>
+    <option value="o4">5. Telescopes and magnifiers</option>
   </optgroup>
   <optgroup label="Optics 2">
-    <option value="d1">5. Vertex distance</option>
-    <option value="d2">6. Vergence and images</option>
-    <option value="d3">7. Conoid of Sturm</option>
-    <option value="d4">8. Prentice and slab-off</option>
+    <option value="d1">6. Vertex distance</option>
+    <option value="d2">7. Vergence and images</option>
+    <option value="d3">8. Conoid of Sturm</option>
+    <option value="d4">9. Prentice and slab-off</option>
   </optgroup>
 </select></label>
 <nav class="benches" role="tablist" aria-label="Demos">
 <div class="bench">
   <span class="bench-label">Optics 1</span>
-  <button class="tab" role="tab" aria-selected="true" data-tab="o1"><span class="num">1</span>Far point and accommodation</button>
-  <button class="tab" role="tab" aria-selected="false" data-tab="o2"><span class="num">2</span>Retinoscopy</button>
-  <button class="tab" role="tab" aria-selected="false" data-tab="o3"><span class="num">3</span>Duochrome</button>
-  <button class="tab" role="tab" aria-selected="false" data-tab="o4"><span class="num">4</span>Telescopes and magnifiers</button>
+  <button class="tab" role="tab" aria-selected="true" data-tab="o0"><span class="num">1</span>Snell's law</button>
+  <button class="tab" role="tab" aria-selected="false" data-tab="o1"><span class="num">2</span>Far point and accommodation</button>
+  <button class="tab" role="tab" aria-selected="false" data-tab="o2"><span class="num">3</span>Retinoscopy</button>
+  <button class="tab" role="tab" aria-selected="false" data-tab="o3"><span class="num">4</span>Duochrome</button>
+  <button class="tab" role="tab" aria-selected="false" data-tab="o4"><span class="num">5</span>Telescopes and magnifiers</button>
 </div>
 <div class="bench">
   <span class="bench-label">Optics 2</span>
-  <button class="tab" role="tab" aria-selected="false" data-tab="d1"><span class="num">5</span>Vertex distance</button>
-  <button class="tab" role="tab" aria-selected="false" data-tab="d2"><span class="num">6</span>Vergence and images</button>
-  <button class="tab" role="tab" aria-selected="false" data-tab="d3"><span class="num">7</span>Conoid of Sturm</button>
-  <button class="tab" role="tab" aria-selected="false" data-tab="d4"><span class="num">8</span>Prentice and slab-off</button>
+  <button class="tab" role="tab" aria-selected="false" data-tab="d1"><span class="num">6</span>Vertex distance</button>
+  <button class="tab" role="tab" aria-selected="false" data-tab="d2"><span class="num">7</span>Vergence and images</button>
+  <button class="tab" role="tab" aria-selected="false" data-tab="d3"><span class="num">8</span>Conoid of Sturm</button>
+  <button class="tab" role="tab" aria-selected="false" data-tab="d4"><span class="num">9</span>Prentice and slab-off</button>
 </div>
 <div class="predict-row"><label class="predict-toggle"><input type="checkbox" id="predict"> <span>Predict mode<span class="long">: hide answers until revealed</span></span></label></div>
 </nav>
 
 <!-- ============ DEMO 1 ============ -->
 <!-- ============ OPTICS 1: AMETROPIA & ACCOMMODATION ============ -->
-<section class="demo active" id="o1" role="tabpanel">
+<!-- ============ OPTICS 1: SNELL'S LAW ============ -->
+<section class="demo active" id="o0" role="tabpanel">
+  <h2>Snell's law and the critical angle</h2>
+  <p class="lede">Sine is just a sideways distance. Draw a circle of radius 1 around the point where light meets the surface: how far the ray sits from the normal, where it crosses the circle, is the sine of its angle.</p>
+  <p class="keyidea"><b>Key idea</b> <span class="ideatag">Big idea 1</span> Index × sideways distance is the same on both sides. If the exit side would need more than the full radius, the light can't leave: total internal reflection.</p>
+  <div class="problem" id="prob-o0" aria-live="polite"></div>
+  <div class="stage"><svg id="svgO0" viewBox="0 0 960 430" role="img" aria-label="Circle construction for Snell's law"></svg></div>
+  <details class="legend"><summary>How to read this diagram</summary><ul>
+    <li><b>Dashed circle:</b> radius 1. <b>Dashed vertical line:</b> the normal. Angles are measured from it.</li>
+    <li><b>Gold:</b> the incoming ray and its sideways distance, s₁ = sin θ₁. <b>Blue:</b> the refracted ray and its sideways distance, s₂ = sin θ₂.</li>
+    <li><b>Tick marks on the surface:</b> the anchor sines. 0.50 = 30°, 0.71 = 45°, 0.87 = 60°, 1 = 90°. Bracket any answer between them.</li>
+    <li><b>Dotted maroon ray:</b> the critical angle, shown when light travels into a less dense medium. <b>Red dashed line:</b> a sideways distance beyond the circle, which is impossible, so the light reflects back.</li>
+  </ul></details>
+  <div class="prompt" id="promptO0"></div>
+  <div class="after-prompt"><button class="reveal reveal-top" data-demo="o0">Reveal answers</button><details class="guide" open><summary>Try this</summary><ol>
+    <li>Load “Air → water, 30°” and predict: toward or away from the normal?</li>
+    <li>Load “Cornea → air: gonioscopy,” then lower the angle until the light escapes. That angle is the critical angle, about 47°.</li>
+    <li>Swap the media so light enters the denser one. Raise the angle to 89°: there is no critical angle going in.</li>
+  </ol></details></div>
+  <div class="grid">
+    <div class="panel">
+      <h3>Set up the surface</h3>
+      <div class="ctrl"><label>Light starts in (n₁)</label>
+        <div class="seg" id="o0m1"><button aria-pressed="true" data-v="1.00">Air 1.00</button><button aria-pressed="false" data-v="1.33">Water 1.33</button><button aria-pressed="false" data-v="1.376">Cornea 1.376</button><button aria-pressed="false" data-v="1.50">CR-39 1.50</button><button aria-pressed="false" data-v="1.52">Crown glass 1.52</button></div>
+      </div>
+      <div class="ctrl"><label>Light enters (n₂)</label>
+        <div class="seg" id="o0m2"><button aria-pressed="false" data-v="1.00">Air 1.00</button><button aria-pressed="true" data-v="1.33">Water 1.33</button><button aria-pressed="false" data-v="1.376">Cornea 1.376</button><button aria-pressed="false" data-v="1.50">CR-39 1.50</button><button aria-pressed="false" data-v="1.52">Crown glass 1.52</button></div>
+      </div>
+      <div class="ctrl"><label for="o0a">Angle of incidence (from the normal) <output id="o0ao"></output></label><input type="range" id="o0a" min="0" max="89" step="1" value="30"></div>
+      <h3>Practice problems</h3>
+      <div class="presets" id="o0pre">
+        <button data-p="1.00,1.33,30" data-q="Light travels from air (n = 1.00) into water (n = 1.33) at 30°. What is the angle of refraction? Does it bend toward or away from the normal?" data-default>Air → water, 30°</button>
+        <button data-p="1.376,1.00,55" data-q="Light from the angle structures reaches the cornea–air surface at 55°. Can it get out? Why can't you see the angle without a goniolens?">Cornea → air: gonioscopy</button>
+        <button data-p="1.52,1.00,35" data-q="Light travels from crown glass (n = 1.52) into air. What is the critical angle? Raise the angle to find it.">Crown glass → air</button>
+        <button data-p="1.33,1.00,30" data-q="Light leaves water (n = 1.33) into air at 30°. What is the angle of refraction?">Water → air, 30°</button>
+        <button data-p="1.00,1.52,60" data-q="Light enters crown glass (n = 1.52) from air at 60°. What is the angle of refraction? Is there a critical angle going in?">Air → crown glass, 60°</button>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Results</h3>
+      <dl class="read">
+        <dt>Sideways distance in, s₁ = sin θ₁</dt><dd id="rO0s1"></dd>
+        <dt>n₁ × s₁ (stays the same)</dt><dd id="rO0ns"></dd>
+        <dt>Sideways distance out, s₂</dt><dd class="ans" id="rO0s2"></dd>
+        <dt>Refraction angle θ₂</dt><dd class="ans" id="rO0t2"></dd>
+        <dt>Critical angle</dt><dd class="ans" id="rO0tc"></dd>
+        <dt>No-calculator estimate</dt><dd class="ans" id="rO0est"></dd>
+      </dl>
+      <div class="formula ans" id="rO0form"></div>
+      <div class="status ans" id="rO0status" aria-live="polite"></div>
+      <button class="reveal" data-demo="o0">Reveal answers</button>
+      <p class="note">Anchor sines: sin 30° = 0.50, sin 45° ≈ 0.71, sin 60° ≈ 0.87. Small-angle shortcut: θ₂ ≈ θ₁ × n₁ / n₂, good to about 30–40°.</p>
+    </div>
+  </div>
+<details class="selfwrap" open><summary>Common mistakes and self-check</summary><div class="selfcheck"><div><h3>Watch out</h3><ul><li>Angles are measured from the <b>normal</b>, not from the surface.</li><li>Total internal reflection only happens going from a <b>higher</b> to a <b>lower</b> index.</li><li>The small-angle shortcut drifts above about 40°. Bracket with the anchor sines instead.</li></ul></div><div><h3>Check yourself</h3><details class="qa"><summary>Light leaves water (n = 1.33) into air at 30°. Angle of refraction?</summary><p>Sideways distance in: 0.50. Out: 0.50 × 1.33 = 0.665, between sin 30° (0.50) and sin 45° (0.71), closer to 45°. About 42° (exact 41.7°), bent away from the normal.</p></details><details class="qa"><summary>What is the critical angle from water into air?</summary><p>The exit side can't exceed a sideways distance of 1, so the largest allowed inside is 1 / 1.33 = 0.75: just above sin 45°. About 49° (exact 48.8°).</p></details></div></div></details>
+</section>
+
+<section class="demo" id="o1" role="tabpanel">
   <h2>Far point, near point, and accommodation</h2>
   <p class="lede">Every eye has a far point (relaxed) and a near point (full accommodation). Set the refractive error and amplitude, then move the target and see whether the eye can bring it onto the retina.</p>
   <p class="keyidea"><b>Key idea</b> <span class="ideatag">Big idea 3</span> The far point is where the relaxed eye is focused; the near point is where full accommodation takes it. Amplitude A = P − R.</p>
@@ -696,8 +755,8 @@ if (window.matchMedia('(max-width:700px)').matches){
 }
 /* ---------- sticky top bar, previous / next ---------- */
 const tbSel = $('tbSelect');
-tbSel.innerHTML = '<optgroup label="Optics 1"><option value="o1">1. Far point</option><option value="o2">2. Retinoscopy</option><option value="o3">3. Duochrome</option><option value="o4">4. Telescopes</option></optgroup>'
-  + '<optgroup label="Optics 2"><option value="d1">5. Vertex distance</option><option value="d2">6. Vergence</option><option value="d3">7. Conoid of Sturm</option><option value="d4">8. Prentice, slab-off</option></optgroup>';
+tbSel.innerHTML = '<optgroup label="Optics 1"><option value="o0">1. Snell\'s law</option><option value="o1">2. Far point</option><option value="o2">3. Retinoscopy</option><option value="o3">4. Duochrome</option><option value="o4">5. Telescopes</option></optgroup>'
+  + '<optgroup label="Optics 2"><option value="d1">6. Vertex distance</option><option value="d2">7. Vergence</option><option value="d3">8. Conoid of Sturm</option><option value="d4">9. Prentice, slab-off</option></optgroup>';
 const tbPred = $('tbPredict'), topbar = $('topbar');
 const allTabs = [...document.querySelectorAll('.tab')];
 function goDemo(id, scroll){ const t = allTabs.find(x => x.dataset.tab === id); if (!t) return; t.click(); if (scroll) document.getElementById(id).scrollIntoView({ block:'start' }); window.scrollBy(0, scroll ? -58 : 0); }
@@ -1519,8 +1578,114 @@ function drawO4(){
   $('svgO4').innerHTML = g;
 }
 
+/* =========================================================
+   OPTICS 1 / DEMO 1: Snell's law, circle construction
+   ========================================================= */
+const so0 = { n1:1.00, n2:1.33, a:30 };
+const MEDIA = { '1.00':'air', '1.33':'water', '1.376':'cornea', '1.50':'CR-39', '1.52':'crown glass' };
+const setM1 = seg('o0m1', v => { so0.n1 = +v; drawO0(); });
+const setM2 = seg('o0m2', v => { so0.n2 = +v; drawO0(); });
+$('o0a').addEventListener('input', () => { so0.a = +$('o0a').value; drawO0(); });
+$('o0pre').querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+  const [n1, n2, a] = b.dataset.p.split(',').map(Number);
+  Object.assign(so0, { n1, n2, a }); setM1(n1.toFixed(n1 === 1.376 ? 3 : 2)); setM2(n2.toFixed(n2 === 1.376 ? 3 : 2));
+  $('o0a').value = a; rehide('o0'); drawO0();
+}));
+const ANCH = [[0,0],[30,0.5],[45,0.7071],[60,0.8660],[90,1]];
+function bracket(s){
+  for (let i = 0; i < ANCH.length - 1; i++){
+    const [d0, s0] = ANCH[i], [d1, s1] = ANCH[i+1];
+    if (s >= s0 - 1e-9 && s <= s1 + 1e-9){
+      if (Math.abs(s - s0) < 0.01) return `≈ sin ${d0}°`;
+      if (Math.abs(s - s1) < 0.01) return `≈ sin ${d1}°`;
+      return `between sin ${d0}° and sin ${d1}°, closer to ${(s - s0) < (s1 - s) ? d0 : d1}°`;
+    }
+  }
+  return '';
+}
+const nm = n => MEDIA[n.toFixed(n === 1.376 ? 3 : 2)] || '';
+
+function drawO0(){
+  const { n1, n2, a } = so0;
+  $('o0ao').textContent = a + '°';
+  const t1 = a * Math.PI/180, s1 = Math.sin(t1), c1 = Math.cos(t1);
+  const s2 = n1 * s1 / n2;
+  const tir = s2 > 1 + 1e-9;
+  const t2 = tir ? null : Math.asin(Math.min(s2, 1)) * 180/Math.PI;
+  const tc = n1 > n2 ? Math.asin(n2 / n1) * 180/Math.PI : null;
+  const est = a * n1 / n2;
+  // readouts
+  $('rO0s1').textContent = s1.toFixed(3);
+  $('rO0ns').textContent = (n1 * s1).toFixed(3);
+  $('rO0s2').textContent = tir ? `${s2.toFixed(3)} (more than 1: impossible)` : s2.toFixed(3);
+  $('rO0t2').textContent = tir ? 'none: total internal reflection' : `${t2.toFixed(1)}° (${Math.abs(t2 - a) < 0.05 ? 'no bending' : t2 < a ? 'toward the normal' : 'away from the normal'})`;
+  $('rO0tc').textContent = tc === null ? 'none (entering an equal or denser medium)' : `${tc.toFixed(1)}° (sin θc = ${n2.toFixed(2)} / ${n1.toFixed(n1 === 1.376 ? 3 : 2)} = ${(n2/n1).toFixed(3)})`;
+  $('rO0est').textContent = tir ? 'past the critical angle' : `${bracket(s2)}; small-angle shortcut ${est.toFixed(1)}°`;
+  $('rO0form').innerHTML = `n₁ sin θ₁ = n₂ sin θ₂ &nbsp;→&nbsp; ${n1.toFixed(n1 === 1.376 ? 3 : 2)} × ${s1.toFixed(3)} = ${n2.toFixed(n2 === 1.376 ? 3 : 2)} × sin θ₂ &nbsp;→&nbsp; sin θ₂ = <b>${s2.toFixed(3)}</b>` + (tir ? ' &nbsp;(> 1: no solution)' : ` &nbsp;→&nbsp; θ₂ = <b>${t2.toFixed(1)}°</b>`);
+  const st = $('rO0status');
+  if (tir){ st.className = 'status warn ans'; st.textContent = `Total internal reflection: the exit side would need a sideways distance of ${s2.toFixed(2)}, beyond the circle. The light reflects back inside.`; }
+  else if (n1 === n2){ st.className = 'status ans'; st.textContent = 'Same index on both sides: the ray passes straight through.'; }
+  else { st.className = 'status good ans'; st.textContent = `Refracted at ${t2.toFixed(1)}°, ${t2 < a ? 'toward' : 'away from'} the normal.`; }
+  $('promptO0').innerHTML = n1 < n2 ? '<strong>Predict:</strong> entering a denser medium, does the ray bend toward or away from the normal? Will the sideways distance grow or shrink?'
+    : n1 > n2 ? (tir ? '<strong>Check:</strong> the exit side would need more than the full radius. Lower the angle: where does the light first escape?' : '<strong>Predict:</strong> leaving a denser medium, the sideways distance grows. How far can you raise the angle before the light cannot get out?')
+    : '<strong>Try it:</strong> pick two different media to see bending.';
+
+  // drawing
+  const W = 960, H = 430, CX = 480, CY = 215, Rr = 160;
+  const ray = css('--ray'), glass = css('--glass'), maroon = css('--maroon'), muted = css('--muted'), line = css('--line'), warn = css('--warn'), ink = css('--ink');
+  const shade = n => Math.min(0.55, (n - 1) * 0.9).toFixed(2);
+  let g = `<rect x="0" y="0" width="${W}" height="${CY}" style="fill:${glass};fill-opacity:${shade(n1)}"/>`;
+  g += `<rect x="0" y="${CY}" width="${W}" height="${H-CY}" style="fill:${glass};fill-opacity:${shade(n2)}"/>`;
+  g += L(0, CY, W, CY, `stroke:${muted};stroke-width:2`);
+  g += L(CX, 18, CX, H-18, `stroke:${muted};stroke-width:1.5;stroke-dasharray:6 5`) + T(CX+8, 30, 'normal', muted, 'start', 13);
+  g += `<circle cx="${CX}" cy="${CY}" r="${Rr}" style="fill:none;stroke:${muted};stroke-width:1.5;stroke-dasharray:4 5"/>`;
+  g += T(18, 30, `n₁ = ${n1.toFixed(n1 === 1.376 ? 3 : 2)}  ${nm(n1)}`, ink, 'start', 17, 700);
+  g += T(18, H-16, `n₂ = ${n2.toFixed(n2 === 1.376 ? 3 : 2)}  ${nm(n2)}`, ink, 'start', 17, 700);
+  // anchor ticks on both sides of the surface
+  const halo = `;paint-order:stroke;stroke:${css('--panel')};stroke-width:5px;stroke-linejoin:round`;
+  ANCH.slice(1).forEach(([d, s]) => {
+    const lab = d === 90 ? '' : d + '°';
+    g += L(CX - Rr*s, CY-7, CX - Rr*s, CY+7, `stroke:${ink};stroke-width:1.5`) + (lab ? T(CX - Rr*s, CY-12, lab, muted + halo, 'middle', 12) : '');
+    g += L(CX + Rr*s, CY-7, CX + Rr*s, CY+7, `stroke:${ink};stroke-width:1.5`) + (lab ? T(CX + Rr*s, CY+24, lab, muted + halo, 'middle', 12) : '');
+  });
+  const arrowAt = (x1, y1, x2, y2, col) => { const mx = (x1+x2)/2, my = (y1+y2)/2, ang = Math.atan2(y2-y1, x2-x1); const p = (dx, dy) => `${(mx + dx*Math.cos(ang) - dy*Math.sin(ang)).toFixed(1)},${(my + dx*Math.sin(ang) + dy*Math.cos(ang)).toFixed(1)}`;
+    return `<polygon points="${p(9,0)} ${p(-6,-6)} ${p(-6,6)}" style="fill:${col}"/>`; };
+  // incident ray
+  const P1x = CX - Rr*s1, P1y = CY - Rr*c1, Sx = CX - 1.32*Rr*s1, Sy = CY - 1.32*Rr*c1;
+  g += L(Sx, Sy, CX, CY, `stroke:${ray};stroke-width:3`) + arrowAt(Sx, Sy, CX, CY, ray);
+  g += L(P1x, P1y, CX, P1y, `stroke:${ray};stroke-width:5;stroke-linecap:round`);
+  g += T((P1x + CX)/2, P1y - 12, `s₁ = ${s1.toFixed(2)}`, ray + halo, 'middle', 15, 700);
+  // critical ray
+  if (tc !== null){
+    const sc = n2/n1, cc = Math.sqrt(1 - sc*sc);
+    g += L(CX, CY, CX - 1.25*Rr*sc, CY - 1.25*Rr*cc, `stroke:${maroon};stroke-width:2;stroke-dasharray:2 5`);
+    g += T(CX - 1.25*Rr*sc - 6, CY - 1.25*Rr*cc - 8, `critical ${tc.toFixed(1)}°`, maroon, 'end', 13, 700);
+  }
+  // outgoing
+  let out = '';
+  if (!tir){
+    const c2 = Math.sqrt(Math.max(0, 1 - s2*s2));
+    const P2x = CX + Rr*s2, P2y = CY + Rr*c2, Ex = CX + 1.32*Rr*s2, Ey = CY + 1.32*Rr*c2;
+    out += L(P2x, CY, P2x, P2y, `stroke:${glass};stroke-width:1.5;stroke-dasharray:5 4`);
+    out += L(CX, CY, Ex, Ey, `stroke:${glass};stroke-width:3`) + arrowAt(CX, CY, Ex, Ey, glass);
+    out += L(CX, P2y, P2x, P2y, `stroke:${glass};stroke-width:5;stroke-linecap:round`);
+    out += T((P2x + CX)/2, P2y + 22, `s₂ = ${s2.toFixed(2)}`, glass + halo, 'middle', 15, 700);
+  } else {
+    const Xs = CX + Rr*s2;
+    out += L(Xs, CY, Xs, CY + Rr*0.95, `stroke:${warn};stroke-width:2;stroke-dasharray:6 5`);
+    out += T(Xs + 8, CY + Rr*0.6, `s₂ would be ${s2.toFixed(2)}`, warn, 'start', 14, 700) + T(Xs + 8, CY + Rr*0.6 + 18, 'beyond the circle', warn, 'start', 13);
+    const Rx = CX + 1.32*Rr*s1, Ry = CY - 1.32*Rr*c1;
+    out += L(CX, CY, Rx, Ry, `stroke:${ray};stroke-width:3;opacity:.85`) + arrowAt(CX, CY, Rx, Ry, ray);
+    out += T(Rx + 6, Ry + 4, 'reflects back', ray, 'start', 14, 700);
+  }
+  g += `<g class="ans-svg">${out}</g>`;
+  g += T(W-18, 30, `n₁ × s₁ = ${(n1*s1).toFixed(3)}`, ink, 'end', 15, 700);
+  g += `<g class="ans-svg">${T(W-18, H-16, tir ? 'no s₂ can match' : `n₂ × s₂ = ${(n2*s2).toFixed(3)}`, ink, 'end', 15, 700)}</g>`;
+  $('svgO0').innerHTML = g;
+}
+
 /* ---------- init & theme changes ---------- */
-function drawAll(){ drawO1(); drawO2(); drawO3(); drawO4(); draw1(); draw2(); draw3(); draw4(); }
+function drawAll(){ drawO0(); drawO1(); drawO2(); drawO3(); drawO4(); draw1(); draw2(); draw3(); draw4(); }
 drawAll();
 try { const h = location.hash.slice(1); if (h && tabs.some(x => x.dataset.tab === h)) openTab(h); } catch (e) {}
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', drawAll);

@@ -4,22 +4,23 @@ Interactive clinical optics demos for OKAP review, created by **Steven C. Quan, 
 
 **Live site:** https://quansc.github.io/Clinical-Optics-Lab/
 
-Eight browser-based simulations covering the core optics concepts residents are tested on. Each demo lets you set up a problem, predict the answer, then reveal the numbers and see the optics change in real time.
+Nine browser-based simulations covering the core optics concepts residents are tested on. Each demo lets you set up a problem, predict the answer, then reveal the numbers and see the optics change in real time.
 
 ## Demos
 
 **Optics 1: foundations**
-1. **Far point and accommodation** – axial vs. refractive ametropia, near point, range of clear vision, near add
-2. **Retinoscopy** – with, against, and neutral motion; working distance; mystery-patient practice mode
-3. **Duochrome** – longitudinal chromatic aberration and sphere refinement
-4. **Telescopes and magnifiers** – Keplerian, Galilean, and reversed telescopes; hand magnifiers; Kestenbaum's rule
+1. **Snell's law** – refraction and the critical angle, shown with the circle construction (sine as a sideways distance)
+2. **Far point and accommodation** – axial vs. refractive ametropia, near point, range of clear vision, near add
+3. **Retinoscopy** – with, against, and neutral motion; working distance; mystery-patient practice mode
+4. **Duochrome** – longitudinal chromatic aberration and sphere refinement
+5. **Telescopes and magnifiers** – Keplerian, Galilean, and reversed telescopes; hand magnifiers; Kestenbaum's rule
 
 **Optics 2: clinical calculations**
 
-5. **Vertex distance** – perceived vs. required power, spectacle-to-contact-lens conversion
-6. **Vergence and images** – U + D = V, real vs. virtual images, magnification
-7. **Conoid of Sturm** – focal lines, circle of least confusion, spherical equivalent, WTR/ATR
-8. **Prentice's rule and slab-off** – induced prism, vertical imbalance, slab-off placement
+6. **Vertex distance** – perceived vs. required power, spectacle-to-contact-lens conversion
+7. **Vergence and images** – U + D = V, real vs. virtual images, magnification
+8. **Conoid of Sturm** – focal lines, circle of least confusion, spherical equivalent, WTR/ATR
+9. **Prentice's rule and slab-off** – induced prism, vertical imbalance, slab-off placement
 
 ## Features
 
@@ -29,7 +30,7 @@ Eight browser-based simulations covering the core optics concepts residents are 
 - Formula sheet and sign conventions on the page
 - Works offline, on phones, and in light or dark mode; side-by-side controls on laptops and larger screens
 - Sticky demo menu, plus previous / next buttons, for quick navigation
-- Direct links to any demo: add `#o1`–`#o4` or `#d1`–`#d4` to the page address
+- Direct links to any demo: add `#o0`–`#o4` or `#d1`–`#d4` to the page address
 
 ## Use it
 
