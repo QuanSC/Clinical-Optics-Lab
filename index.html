@@ -4,8 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="author" content="Steven C. Quan, OD, FAAO">
-<meta name="description" content="The Optics Bench: interactive clinical optics demos for OKAP review, created by Steven C. Quan, OD, FAAO.">
-<title>The Optics Bench: Optics 1 and 2 OKAP Review</title>
+<meta name="theme-color" content="#800000">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23800000'/%3E%3Cpath d='M6 32h52' stroke='%23F7F2E7' stroke-width='3'/%3E%3Cpath d='M32 12q8 20 0 40q-8-20 0-40z' fill='%23F7F2E7'/%3E%3Cpath d='M8 22L32 32L56 42M8 42L32 32L56 22' stroke='%23D8B26A' stroke-width='2.5' fill='none'/%3E%3C/svg%3E">
+<link rel="canonical" href="https://quansc.github.io/Clinical-Optics-Lab/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="The Optics Lab: Interactive Clinical Optics">
+<meta property="og:description" content="Eight interactive demos for ophthalmic optics: vertex distance, retinoscopy, the conoid of Sturm, prisms, telescopes, and more. Predict, then reveal.">
+<meta property="og:url" content="https://quansc.github.io/Clinical-Optics-Lab/">
+<meta name="twitter:card" content="summary">
+<meta name="description" content="The Optics Lab: interactive clinical optics demos for OKAP review, created by Steven C. Quan, OD, FAAO.">
+<title>The Optics Lab: Optics 1 and 2 OKAP Review</title>
 <style>
 :root{
   color-scheme: light;
@@ -131,12 +139,13 @@ details.selfwrap > summary{cursor:pointer;font-weight:700;color:var(--maroon);pa
 details.selfwrap .selfcheck{margin-top:8px}
 
 /* ---------- big screens: diagram left, controls pinned right ---------- */
-@media (min-width:1300px){
+@media (min-width:1100px){
   .wrap{max-width:1560px}
-  section.demo.active{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(380px,1fr);grid-template-rows:repeat(8,auto) 1fr;column-gap:24px;align-items:start}
+  section.demo.active{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(360px,1fr);grid-template-rows:repeat(8,auto) 1fr;column-gap:24px;align-items:start}
   section.demo > *{grid-column:1}
-  section.demo > .grid{grid-column:2;grid-row:1 / span 9;grid-template-columns:1fr;margin-top:6px;position:sticky;top:12px;max-height:calc(100vh - 24px);overflow-y:auto;padding-right:4px}
-  section.demo > details.selfwrap{grid-column:1 / -1}
+  section.demo > .grid{grid-column:2;grid-row:1 / span 9;grid-template-columns:1fr;margin-top:6px;position:sticky;top:64px;max-height:calc(100vh - 76px);overflow-y:auto;padding-right:4px}
+  section.demo > details.selfwrap, section.demo > .pager{grid-column:1}
+  section.demo > details.selfwrap .selfcheck{grid-template-columns:minmax(0,1fr) minmax(0,1.2fr)}
 }
 
 /* ---------- phones: lighter layout ---------- */
@@ -170,13 +179,35 @@ details.selfwrap .selfcheck{margin-top:8px}
 @media (max-width:700px) and (orientation:landscape){ .stage::after{display:none} }
 .ideatag{display:inline-block;font-size:12px;font-weight:700;color:var(--maroon);background:var(--chip);border-radius:999px;padding:1px 8px;margin:0 2px 0 6px;vertical-align:1px}
 .ideas li{margin:4px 0}
+.topbar{position:fixed;top:0;left:0;right:0;z-index:50;background:var(--panel);border-bottom:2px solid var(--maroon);box-shadow:0 2px 10px rgba(0,0,0,.08);transform:translateY(-110%);transition:transform .2s ease}
+.topbar.show{transform:none}
+@media (prefers-reduced-motion:reduce){.topbar{transition:none}}
+.topbar-in{max-width:1560px;margin:0 auto;padding:8px 20px;display:flex;align-items:center;gap:12px}
+.tb-title{font:inherit;font-family:var(--serif);font-weight:600;font-size:18px;color:var(--maroon);background:none;border:0;padding:4px 0;cursor:pointer;white-space:nowrap}
+#tbSelect{flex:0 1 340px;min-width:0;font:inherit;font-weight:600;font-size:15px;padding:7px 10px;border-radius:8px;border:2px solid var(--maroon);background:var(--bg);color:var(--ink)}
+.tb-predict{margin-left:auto;display:flex;align-items:center;gap:6px;font-weight:600;font-size:14px;white-space:nowrap}
+.tb-predict input{width:18px;height:18px;accent-color:var(--maroon)}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:20px}
+.pager button{font:inherit;font-weight:600;font-size:15px;border:2px solid var(--line);background:var(--panel);color:var(--ink);border-radius:10px;padding:10px 14px;cursor:pointer;max-width:48%;text-align:left}
+.pager button.next{margin-left:auto;text-align:right}
+.pager button:hover{border-color:var(--maroon);color:var(--maroon)}
+.pager small{display:block;font-size:12px;color:var(--muted);font-weight:600}
+@media (max-width:700px){.tb-title{font-size:16px}.topbar-in{padding:6px 12px;gap:8px}#tbSelect{flex:1 1 auto;font-size:14px}.pager button{font-size:14px;padding:8px 10px}}
+@media (max-width:380px){.tb-title{display:none}}
 footer{margin-top:40px;color:var(--muted);font-size:14px;border-top:1px solid var(--line);padding-top:14px;max-width:80ch}
 </style>
 </head>
 <body>
+<div class="topbar" id="topbar" aria-hidden="true">
+  <div class="topbar-in">
+    <button class="tb-title" id="tbTop" type="button" title="Back to top">The Optics Lab</button>
+    <select id="tbSelect" aria-label="Switch demo"></select>
+    <label class="tb-predict"><input type="checkbox" id="tbPredict"> <span>Predict</span></label>
+  </div>
+</div>
 <div class="wrap">
 <header>
-  <h1>The Optics Bench</h1>
+  <h1>The Optics Lab</h1>
   <p class="byline">Created by Steven C. Quan, OD, FAAO</p>
   <p class="intro-short">Pick a demo, load a problem, predict, then reveal.</p>
   <p class="intro">Eight interactive demos for the Optics 1 and Optics 2 OKAP sessions. The tabs are numbered in a suggested order: each demo builds on the far point idea from the one before.</p>
@@ -250,7 +281,7 @@ footer{margin-top:40px;color:var(--muted);font-size:14px;border-top:1px solid va
   <button class="tab" role="tab" aria-selected="false" data-tab="d3"><span class="num">7</span>Conoid of Sturm</button>
   <button class="tab" role="tab" aria-selected="false" data-tab="d4"><span class="num">8</span>Prentice and slab-off</button>
 </div>
-<div class="predict-row"><label class="predict-toggle"><input type="checkbox" id="predict"> Predict mode<span class="long">: hide answers until revealed</span></label></div>
+<div class="predict-row"><label class="predict-toggle"><input type="checkbox" id="predict"> <span>Predict mode<span class="long">: hide answers until revealed</span></span></label></div>
 </nav>
 
 <!-- ============ DEMO 1 ============ -->
@@ -258,7 +289,7 @@ footer{margin-top:40px;color:var(--muted);font-size:14px;border-top:1px solid va
 <section class="demo active" id="o1" role="tabpanel">
   <h2>Far point, near point, and accommodation</h2>
   <p class="lede">Every eye has a far point (relaxed) and a near point (full accommodation). Set the refractive error and amplitude, then move the target and see whether the eye can bring it onto the retina.</p>
-  <p class="keyidea"><b>Key idea</b> <span class="ideatag">Big idea 3</span><b>:</b> The far point is where the relaxed eye is focused; the near point is where full accommodation takes it. Amplitude A = P − R.</p>
+  <p class="keyidea"><b>Key idea</b> <span class="ideatag">Big idea 3</span> The far point is where the relaxed eye is focused; the near point is where full accommodation takes it. Amplitude A = P − R.</p>
   <div class="problem" id="prob-o1" aria-live="polite"></div>
   <div class="stage"><svg id="svgO1" viewBox="0 0 960 420" role="img" aria-label="Schematic eye focusing a target, with a dioptric ruler"></svg></div>
   <details class="legend"><summary>How to read this diagram</summary><ul><li><b>Gold lines:</b> light from the target entering the eye.</li><li><b>Green dot on the retina:</b> sharp focus. <b>Gold bar on the retina:</b> blur; its height shows how much.</li><li><b>Dioptric ruler:</b> diopters in front of the eye. 0 is infinity; values grow as objects come closer (2.5 D = 40 cm).</li><li><b>Gray zone at the left:</b> points behind the eye (virtual). An uncorrected hyperope's far point sits here.</li><li><b>Green dot:</b> far point. <b>Maroon dot:</b> near point. <b>Green bar between them:</b> range of clear vision. <b>Triangle:</b> the target.</li></ul></details>
@@ -309,7 +340,7 @@ footer{margin-top:40px;color:var(--muted);font-size:14px;border-top:1px solid va
 <section class="demo" id="o2" role="tabpanel">
   <h2>Retinoscopy</h2>
   <p class="lede">The reflex is light leaving the patient's eye and heading for its far point. Against motion means the far point lies between the eye and your peephole; with motion means it lies beyond you or behind the eye. Neutralize, then subtract the working distance.</p>
-  <p class="keyidea"><b>Key idea</b> <span class="ideatag">Big idea 3</span><b>:</b> Against motion: the far point is between the eye and you. With motion: it is beyond you or behind the eye. Neutral: it is at your peephole. Net = gross − working distance.</p>
+  <p class="keyidea"><b>Key idea</b> <span class="ideatag">Big idea 3</span> Against motion: the far point is between the eye and you. With motion: it is beyond you or behind the eye. Neutral: it is at your peephole. Net = gross − working distance.</p>
   <div class="problem" id="prob-o2" aria-live="polite"></div>
   <div class="stage two">
     <div><svg id="svgO2a" viewBox="0 0 960 300" role="img" aria-label="Side view of retinoscopy with far point and peephole"></svg></div>
@@ -360,7 +391,7 @@ footer{margin-top:40px;color:var(--muted);font-size:14px;border-top:1px solid va
 <section class="demo" id="o3" role="tabpanel">
   <h2>Duochrome and chromatic aberration</h2>
   <p class="lede">Shorter wavelengths refract more, so green focuses in front of red. The duochrome straddles the retina with the two colors: whichever side focuses closer to the retina looks sharper. No color discrimination is needed, so it works for color-deficient patients.</p>
-  <p class="keyidea"><b>Key idea</b> <span class="ideatag">Big idea 1, 3</span><b>:</b> Green focuses in front of red. Red clearer, add minus; green clearer, add plus (RAM-GAP).</p>
+  <p class="keyidea"><b>Key idea</b> <span class="ideatag">Big idea 1, 3</span> Green focuses in front of red. Red clearer, add minus; green clearer, add plus (RAM-GAP).</p>
   <div class="problem" id="prob-o3" aria-live="polite"></div>
   <div class="stage two">
     <div><svg id="svgO3a" viewBox="0 0 960 300" role="img" aria-label="Green, yellow, and red foci relative to the retina"></svg></div>
@@ -403,7 +434,7 @@ footer{margin-top:40px;color:var(--muted);font-size:14px;border-top:1px solid va
 <section class="demo" id="o4" role="tabpanel">
   <h2>Telescopes and magnifiers</h2>
   <p class="lede">An afocal telescope turns parallel light into parallel light at a new angle. A weak objective and a strong eyepiece magnify; swap them and the telescope minifies.</p>
-  <p class="keyidea"><b>Key idea</b> <span class="ideatag">Big idea 7</span><b>:</b> Magnification = eyepiece power ÷ objective power. Keplerian: two plus lenses, inverted, longer. Galilean: plus objective and minus eyepiece, upright, shorter.</p>
+  <p class="keyidea"><b>Key idea</b> <span class="ideatag">Big idea 7</span> Magnification = eyepiece power ÷ objective power. Keplerian: two plus lenses, inverted, longer. Galilean: plus objective and minus eyepiece, upright, shorter.</p>
   <div class="problem" id="prob-o4" aria-live="polite"></div>
   <div class="stage"><svg id="svgO4" viewBox="0 0 960 340" role="img" aria-label="Telescope ray diagram"></svg></div>
   <details class="legend"><summary>How to read this diagram</summary><ul><li><b>Gold lines:</b> a parallel bundle from a distant object on the axis. A narrower bundle leaving the eyepiece means magnification.</li><li><b>Maroon line:</b> light from an off-axis object. It leaves at a steeper angle when magnified; leaving on the opposite side means the image is inverted.</li><li><b>F′ obj:</b> the objective's focal point. Keplerian rays cross here (real intermediate image); in a Galilean telescope it lies beyond the eyepiece (dashed, virtual).</li></ul></details>
@@ -449,7 +480,7 @@ footer{margin-top:40px;color:var(--muted);font-size:14px;border-top:1px solid va
 <section class="demo" id="d1" role="tabpanel">
   <h2>Vertex distance and effective power</h2>
   <p class="lede">The patient is fully corrected at the original vertex. Move the lens and watch the focus leave the retina. Then switch to the required lens to bring it back.</p>
-  <p class="keyidea"><b>Key idea</b> <span class="ideatag">Big idea 3, 4</span><b>:</b> A lens moved away from the eye is perceived as more plus, so the required power shifts the opposite way. Closer Add Plus (CAP).</p>
+  <p class="keyidea"><b>Key idea</b> <span class="ideatag">Big idea 3, 4</span> A lens moved away from the eye is perceived as more plus, so the required power shifts the opposite way. Closer Add Plus (CAP).</p>
   <div class="problem" id="prob-d1" aria-live="polite"></div>
   <div class="stage"><svg id="svg1" viewBox="0 0 960 290" role="img" aria-label="Lens in front of a schematic eye with rays"></svg></div>
   <details class="legend"><summary>How to read this diagram</summary><ul><li><b>Gold lines:</b> light from a distant object through the lens and into the eye.</li><li><b>Dashed lens:</b> the original position. <b>Solid lens:</b> where it is now.</li><li><b>Green dot:</b> the eye's far point. <b>Gold dot (Lens F′):</b> the lens focal point. The patient is corrected only when the two coincide.</li><li><b>Gold bar on the retina:</b> blur. <b>Green dot on the retina:</b> sharp focus.</li></ul></details>
@@ -496,7 +527,7 @@ footer{margin-top:40px;color:var(--muted);font-size:14px;border-top:1px solid va
 <section class="demo" id="d2" role="tabpanel">
   <h2>Vergence and image formation</h2>
   <p class="lede">Place a real object in front of a thin lens. The three principal rays find the image; dashed lines are virtual extensions. Watch the sign of V and of m.</p>
-  <p class="keyidea"><b>Key idea</b> <span class="ideatag">Big idea 2, 7</span><b>:</b> V = U + D. A negative image distance means a virtual image; the sign of m = U / V tells you upright or inverted.</p>
+  <p class="keyidea"><b>Key idea</b> <span class="ideatag">Big idea 2, 7</span> V = U + D. A negative image distance means a virtual image; the sign of m = U / V tells you upright or inverted.</p>
   <div class="problem" id="prob-d2" aria-live="polite"></div>
   <div class="stage"><svg id="svg2" viewBox="0 0 960 400" role="img" aria-label="Thin lens ray diagram"></svg></div>
   <details class="legend"><summary>How to read this diagram</summary><ul><li><b>Maroon arrow:</b> the object. <b>Blue arrow:</b> the image (solid = real, dashed = virtual).</li><li><b>Gold lines:</b> the three principal rays. <b>Dashed gray lines:</b> virtual extensions traced backward to a virtual image.</li><li><b>F and F′:</b> the primary and secondary focal points. The scale adjusts automatically and is shown at the bottom left.</li></ul></details>
@@ -536,7 +567,7 @@ footer{margin-top:40px;color:var(--muted);font-size:14px;border-top:1px solid va
 <section class="demo" id="d3" role="tabpanel">
   <h2>Conoid of Sturm</h2>
   <p class="lede">An uncorrected spherocylinder focuses light into two perpendicular focal lines. Choose a correction, then scan the viewing plane through the conoid to see the blur change shape. Positions are in diopters relative to the retina.</p>
-  <p class="keyidea"><b>Key idea</b> <span class="ideatag">Big idea 5</span><b>:</b> Two focal lines form, each perpendicular to the meridian that creates it. The spherical equivalent puts the circle of least confusion on the retina.</p>
+  <p class="keyidea"><b>Key idea</b> <span class="ideatag">Big idea 5</span> Two focal lines form, each perpendicular to the meridian that creates it. The spherical equivalent puts the circle of least confusion on the retina.</p>
   <div class="problem" id="prob-d3" aria-live="polite"></div>
   <div class="stage two">
     <div><svg id="svg3a" viewBox="0 0 960 340" role="img" aria-label="Side view of the conoid of Sturm"></svg></div>
@@ -585,7 +616,7 @@ footer{margin-top:40px;color:var(--muted);font-size:14px;border-top:1px solid va
 <section class="demo" id="d4" role="tabpanel">
   <h2>Prentice's rule and slab-off</h2>
   <p class="lede">Looking below the optical centers of unequal lenses induces unequal vertical prism. Lower the reading point and watch the images separate. Add slab-off to bring them back together.</p>
-  <p class="keyidea"><b>Key idea</b> <span class="ideatag">Big idea 6</span><b>:</b> Prism = decentration (cm) × power. Unequal lenses give unequal prism in downgaze; slab-off goes on the more minus (less plus) lens.</p>
+  <p class="keyidea"><b>Key idea</b> <span class="ideatag">Big idea 6</span> Prism = decentration (cm) × power. Unequal lenses give unequal prism in downgaze; slab-off goes on the more minus (less plus) lens.</p>
   <div class="problem" id="prob-d4" aria-live="polite"></div>
   <div class="stage two">
     <div><svg id="svg4a" viewBox="0 0 960 330" role="img" aria-label="Front view of spectacles with induced prism"></svg></div>
@@ -671,6 +702,36 @@ document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () =>
 if (window.matchMedia('(max-width:700px)').matches){
   document.querySelectorAll('details.guide, details.selfwrap, header details.conv').forEach(d => d.removeAttribute('open'));
 }
+/* ---------- sticky top bar, previous / next ---------- */
+const tbSel = $('tbSelect');
+tbSel.innerHTML = '<optgroup label="Optics 1"><option value="o1">1. Far point</option><option value="o2">2. Retinoscopy</option><option value="o3">3. Duochrome</option><option value="o4">4. Telescopes</option></optgroup>'
+  + '<optgroup label="Optics 2"><option value="d1">5. Vertex distance</option><option value="d2">6. Vergence</option><option value="d3">7. Conoid of Sturm</option><option value="d4">8. Prentice, slab-off</option></optgroup>';
+const tbPred = $('tbPredict'), topbar = $('topbar');
+const allTabs = [...document.querySelectorAll('.tab')];
+function goDemo(id, scroll){ const t = allTabs.find(x => x.dataset.tab === id); if (!t) return; t.click(); if (scroll) document.getElementById(id).scrollIntoView({ block:'start' }); window.scrollBy(0, scroll ? -58 : 0); }
+tbSel.addEventListener('change', () => goDemo(tbSel.value, true));
+allTabs.forEach(t => t.addEventListener('click', () => { tbSel.value = t.dataset.tab; }));
+tbPred.addEventListener('change', () => { predict.checked = tbPred.checked; predict.dispatchEvent(new Event('change')); });
+predict.addEventListener('change', () => { tbPred.checked = predict.checked; });
+$('tbTop').addEventListener('click', () => window.scrollTo({ top:0 }));
+const navEl = document.querySelector('.benches');
+const pickEl = document.querySelector('.demo-picker');
+if ('IntersectionObserver' in window){
+  const seen = new Set();
+  const io = new IntersectionObserver(es => { es.forEach(e => e.isIntersecting ? seen.add(e.target) : seen.delete(e.target));
+    const on = seen.size === 0; topbar.classList.toggle('show', on); topbar.setAttribute('aria-hidden', !on); }, { rootMargin: '-64px 0px 0px 0px' });
+  [navEl, pickEl].forEach(el => el && io.observe(el));
+}
+allTabs.forEach((t, i) => {
+  const sec = document.getElementById(t.dataset.tab); if (!sec) return;
+  const prev = allTabs[i - 1], next = allTabs[i + 1];
+  const nm = x => x.textContent.replace(/^\d+/, '').trim();
+  const nav = document.createElement('nav'); nav.className = 'pager'; nav.setAttribute('aria-label', 'Previous and next demo');
+  if (prev){ const b = document.createElement('button'); b.type = 'button'; b.innerHTML = `<small>Previous</small>\u2190 ${i}. ${nm(prev)}`; b.onclick = () => goDemo(prev.dataset.tab, true); nav.appendChild(b); }
+  if (next){ const b = document.createElement('button'); b.type = 'button'; b.className = 'next'; b.innerHTML = `<small>Next</small>${i + 2}. ${nm(next)} \u2192`; b.onclick = () => goDemo(next.dataset.tab, true); nav.appendChild(b); }
+  sec.appendChild(nav);
+});
+tbSel.value = (allTabs.find(t => t.getAttribute('aria-selected') === 'true') || allTabs[0]).dataset.tab;
 /* ---------- problem cards ---------- */
 function showProblem(btn){
   const sec = btn.closest('section.demo'); if (!sec) return;

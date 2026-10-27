@@ -2,6 +2,8 @@
 
 Interactive clinical optics demos for OKAP review, created by **Steven C. Quan, OD, FAAO**.
 
+**Live site:** https://quansc.github.io/Clinical-Optics-Lab/
+
 Eight browser-based simulations covering the core optics concepts residents are tested on. Each demo lets you set up a problem, predict the answer, then reveal the numbers and see the optics change in real time.
 
 ## Demos
@@ -25,7 +27,8 @@ Eight browser-based simulations covering the core optics concepts residents are 
 - Predict mode that hides answers until you commit
 - "How to read this diagram" legends, common mistakes, and check-yourself questions for every demo
 - Formula sheet and sign conventions on the page
-- Works offline, on phones, and in light or dark mode
+- Works offline, on phones, and in light or dark mode; side-by-side controls on laptops and larger screens
+- Sticky demo menu, plus previous / next buttons, for quick navigation
 - Direct links to any demo: add `#o1`–`#o4` or `#d1`–`#d4` to the page address
 
 ## Use it
