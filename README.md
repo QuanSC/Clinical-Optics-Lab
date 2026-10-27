@@ -1,4 +1,4 @@
-# The Optics Bench
+# The Optics Lab
 
 Interactive clinical optics demos for OKAP review, created by **Steven C. Quan, OD, FAAO**.
 
