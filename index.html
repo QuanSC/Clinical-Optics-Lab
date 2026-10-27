@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Steven C. Quan, OD, FAAO">
+<meta name="description" content="The Optics Bench: interactive clinical optics demos for OKAP review, created by Steven C. Quan, OD, FAAO.">
+<title>The Optics Bench: Optics 1 and 2 OKAP Review</title>
+<style>
+:root{
+  color-scheme: light;
+  --bg:#FCFBF9; --panel:#FFFFFF; --ink:#1E1A1A; --muted:#675E5E; --line:#DDD6CF;
+  --maroon:#800000; --gold:#9C7228; --ray:#C47A06; --glass:#5E8FAD; --glass-fill:rgba(94,143,173,.18);
+  --good:#2C7A4B; --warn:#A3261E; --m1:#C47A06; --m2:#3F7FA6; --chip:#F3EEE9;
+  --serif:"Iowan Old Style","Palatino Linotype","Book Antiqua",Palatino,Georgia,serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    color-scheme: dark;
+    --bg:#161212; --panel:#1F1919; --ink:#F2EDE9; --muted:#B5ABA6; --line:#3A3131;
+    --maroon:#E58C8C; --gold:#D8B26A; --ray:#F2B544; --glass:#8EC3E0; --glass-fill:rgba(142,195,224,.16);
+    --good:#71C892; --warn:#F08A80; --m1:#F2B544; --m2:#7DB9E0; --chip:#2A2222;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5}
+.wrap{max-width:1120px;margin:0 auto;padding:28px 20px 60px}
+header h1{font-family:var(--serif);font-weight:600;font-size:clamp(28px,4.4vw,44px);line-height:1.1;margin:0 0 6px;color:var(--maroon);letter-spacing:-.01em}
+header p{margin:0;color:var(--muted);max-width:68ch}
+details.conv{margin:18px 0 0;border-left:4px solid var(--maroon);background:var(--panel);padding:10px 16px;border-radius:0 8px 8px 0}
+details.conv summary{cursor:pointer;font-weight:600}
+details.conv ul{margin:8px 0 4px;padding-left:20px}
+details.conv li{margin:3px 0}
+
+/* Optical-axis tab bar */
+.benches{margin:28px 0 8px;display:flex;flex-direction:column;gap:12px}
+.bench{position:relative;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.bench-label{position:relative;z-index:1;font-family:var(--serif);font-style:italic;font-weight:600;font-size:17px;color:var(--maroon);background:var(--bg);padding:0 10px 0 0;min-width:84px}
+.predict-row{display:flex;justify-content:flex-end}
+.bench::before{content:"";position:absolute;left:0;right:0;top:50%;height:2px;background:var(--maroon);opacity:.55;z-index:0}
+.tab{position:relative;z-index:1;font:inherit;font-size:15px;font-weight:600;color:var(--ink);background:var(--bg);border:2px solid var(--line);border-radius:999px;padding:8px 16px;cursor:pointer}
+.tab[aria-selected="true"]{border-color:var(--maroon);color:var(--bg);background:var(--maroon)}
+.predict-toggle{position:relative;z-index:1;margin-left:auto;background:var(--bg);padding:6px 12px;border-radius:999px;border:2px solid var(--line);display:flex;gap:8px;align-items:center;font-size:14px;font-weight:600}
+.predict-toggle input{width:18px;height:18px;accent-color:var(--maroon)}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+section.demo{display:none;margin-top:18px}
+section.demo.active{display:block}
+.demo h2{font-family:var(--serif);font-weight:600;font-size:26px;margin:6px 0 2px}
+.demo .lede{color:var(--muted);margin:0 0 12px;max-width:72ch}
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.stage svg{display:block;width:100%;height:auto}
+.prompt{margin:14px 0 0;padding:12px 16px;background:var(--chip);border-radius:10px;font-weight:500}
+.prompt strong{color:var(--maroon)}
+.grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:18px;margin-top:16px}
+@media (max-width:820px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.panel h3{margin:0 0 10px;font-size:15px;color:var(--muted);font-weight:600}
+.ctrl{margin:0 0 14px}
+.ctrl label{display:flex;justify-content:space-between;gap:10px;font-weight:600;font-size:15px}
+.ctrl output{font-variant-numeric:tabular-nums;color:var(--maroon);font-weight:700}
+.ctrl input[type=range]{width:100%;accent-color:var(--maroon);margin-top:6px;height:28px}
+.seg{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.seg button,.presets button{font:inherit;font-size:14px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;padding:6px 10px;cursor:pointer}
+.seg button[aria-pressed="true"]{border-color:var(--maroon);background:var(--maroon);color:var(--bg)}
+.presets{display:flex;flex-wrap:wrap;gap:6px}
+.presets button:hover,.seg button:hover{border-color:var(--maroon)}
+dl.read{margin:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:6px 14px;font-size:15px}
+dl.read dt{color:var(--muted)}
+dl.read dd{margin:0;font-weight:600;font-variant-numeric:tabular-nums;text-align:right}
+.formula{margin-top:12px;padding:10px 12px;border-radius:8px;background:var(--chip);font-variant-numeric:tabular-nums;font-size:15px;overflow-x:auto}
+.status{margin-top:12px;font-weight:600}
+.status.good{color:var(--good)} .status.warn{color:var(--warn)}
+.reveal{display:none;margin-top:12px;font:inherit;font-weight:700;border:2px solid var(--maroon);background:var(--bg);color:var(--maroon);border-radius:8px;padding:8px 14px;cursor:pointer}
+.hide .reveal{display:inline-block}
+.hide .ans{color:transparent !important;background:var(--line);border-radius:4px;user-select:none}
+.hide .ans *{visibility:hidden}
+.hide .ans-svg{opacity:0}
+.ans-svg{transition:opacity .25s}
+@media (prefers-reduced-motion:reduce){.ans-svg{transition:none}}
+.two{display:grid;grid-template-columns:minmax(0,2.4fr) minmax(0,1fr);gap:0}
+@media (max-width:820px){.two{grid-template-columns:1fr}}
+.two > div + div{border-left:1px solid var(--line)}
+@media (max-width:820px){.two > div + div{border-left:0;border-top:1px solid var(--line)}}
+.caption{font-size:14px;color:var(--muted);padding:6px 12px 10px;text-align:center}
+.note{font-size:14px;color:var(--muted);margin-top:10px}
+svg text{font-family:var(--sans)}
+.presets + h3{margin-top:16px}
+.how{margin:12px 0 0;padding-left:22px;max-width:72ch;color:var(--ink)}
+.how li{margin:2px 0}
+.tab .num{display:inline-grid;place-items:center;width:20px;height:20px;margin-right:7px;border-radius:50%;font-size:12px;font-weight:700;background:var(--chip);color:var(--maroon)}
+.tab[aria-selected="true"] .num{background:var(--bg);color:var(--maroon)}
+.keyidea{margin:0 0 14px;padding:8px 14px;border-left:4px solid var(--gold);background:var(--panel);border-radius:0 8px 8px 0;max-width:80ch}
+.after-prompt{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;margin-top:12px}
+.after-prompt .reveal{margin-top:0}
+details.guide{flex:1 1 320px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 14px}
+details.guide summary{cursor:pointer;font-weight:700;color:var(--maroon)}
+details.guide ol{margin:6px 0 2px;padding-left:22px}
+details.guide li{margin:3px 0}
+.stepper{display:flex;align-items:center;gap:8px;margin-top:4px}
+.stepper input[type=range]{flex:1;margin-top:0}
+.stepper button{font:inherit;font-weight:700;font-size:17px;line-height:1;width:34px;height:34px;flex:0 0 34px;border-radius:8px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.stepper button:hover{border-color:var(--maroon)}
+.stepper button:disabled{opacity:.4;cursor:not-allowed}
+details.legend{margin:10px 0 0;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 14px}
+details.legend summary{cursor:pointer;font-weight:700;color:var(--maroon)}
+details.legend ul{margin:6px 0 2px;padding-left:20px}
+details.legend li{margin:4px 0}
+.problem{margin:0 0 14px;padding:12px 16px;border:2px solid var(--maroon);border-radius:10px;background:var(--panel);max-width:none}
+.problem:empty{display:none}
+.problem .ptitle{font-weight:700;color:var(--maroon);margin-right:6px}
+.problem .phint{display:block;margin-top:4px;font-size:13px;color:var(--muted)}
+.presets button[aria-pressed="true"]{border-color:var(--maroon);box-shadow:inset 0 0 0 1px var(--maroon);font-weight:600}
+.selfcheck{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:18px;margin-top:16px;padding:14px 16px;background:var(--panel);border:1px solid var(--line);border-radius:12px}
+@media (max-width:820px){.selfcheck{grid-template-columns:1fr}}
+.selfcheck h3{margin:0 0 8px;font-size:15px;color:var(--maroon)}
+.selfcheck ul{margin:0;padding-left:20px}
+.selfcheck li{margin:4px 0}
+details.qa{border-top:1px solid var(--line);padding:8px 0}
+details.qa:first-of-type{border-top:0;padding-top:0}
+details.qa summary{cursor:pointer;font-weight:600}
+details.qa summary::marker{color:var(--maroon)}
+details.qa p{margin:6px 0 0 18px;padding:8px 12px;background:var(--chip);border-radius:8px;font-variant-numeric:tabular-nums}
+details.faculty{margin-top:36px}
+.byline{margin:0 0 10px;font-family:var(--serif);font-style:italic;font-size:17px;color:var(--ink)}
+
+.demo-picker,.intro-short{display:none}
+details.selfwrap{margin-top:16px}
+details.selfwrap > summary{cursor:pointer;font-weight:700;color:var(--maroon);padding:6px 0}
+details.selfwrap .selfcheck{margin-top:8px}
+
+/* ---------- big screens: diagram left, controls pinned right ---------- */
+@media (min-width:1300px){
+  .wrap{max-width:1560px}
+  section.demo.active{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(380px,1fr);grid-template-rows:repeat(8,auto) 1fr;column-gap:24px;align-items:start}
+  section.demo > *{grid-column:1}
+  section.demo > .grid{grid-column:2;grid-row:1 / span 9;grid-template-columns:1fr;margin-top:6px;position:sticky;top:12px;max-height:calc(100vh - 24px);overflow-y:auto;padding-right:4px}
+  section.demo > details.selfwrap{grid-column:1 / -1}
+}
+
+/* ---------- phones: lighter layout ---------- */
+@media (max-width:700px){
+  .wrap{padding:18px 14px 48px}
+  header h1{font-size:30px}
+  .intro,.how,.demo .lede,.bench-label{display:none}
+  .intro-short{display:block;margin:0;color:var(--muted)}
+  header .note{display:none}
+  details.conv{margin-top:8px;padding:6px 12px;font-size:15px}
+  .benches{margin:4px 0 0}
+  .benches .bench{display:none}
+  .demo-picker{display:flex;align-items:center;gap:10px;margin:16px 0 8px;font-weight:700}
+  .demo-picker select{flex:1 1 auto;min-width:0;width:100%;font:inherit;font-weight:600;font-size:16px;padding:10px 12px;border-radius:10px;border:2px solid var(--maroon);background:var(--panel);color:var(--ink)}
+  .predict-row{justify-content:flex-start}
+  .predict-toggle .long{display:none}
+  .demo h2{font-size:22px}
+  .keyidea{font-size:15px}
+  .problem{font-size:15px;padding:10px 12px}
+  .problem .phint{display:none}
+  .stage::after{content:"Turn your phone sideways for a larger diagram.";display:block;font-size:12px;color:var(--muted);text-align:center;padding:4px 8px 8px}
+  .two > div + div svg{max-width:240px;margin:0 auto}
+  .presets{flex-wrap:nowrap;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+  .presets button{flex:0 0 auto;white-space:nowrap}
+  .grid{gap:12px;grid-template-columns:minmax(0,1fr)}
+  .panel,.ctrl,.presets{min-width:0;max-width:100%}
+  .panel{padding:12px}
+  dl.read{font-size:14px}
+  .after-prompt{gap:8px}
+}
+@media (max-width:700px) and (orientation:landscape){ .stage::after{display:none} }
+.ideatag{display:inline-block;font-size:12px;font-weight:700;color:var(--maroon);background:var(--chip);border-radius:999px;padding:1px 8px;margin:0 2px 0 6px;vertical-align:1px}
+.ideas li{margin:4px 0}
+footer{margin-top:40px;color:var(--muted);font-size:14px;border-top:1px solid var(--line);padding-top:14px;max-width:80ch}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>The Optics Bench</h1>
+  <p class="byline">Created by Steven C. Quan, OD, FAAO</p>
+  <p class="intro-short">Pick a demo, load a problem, predict, then reveal.</p>
+  <p class="intro">Eight interactive demos for the Optics 1 and Optics 2 OKAP sessions. The tabs are numbered in a suggested order: each demo builds on the far point idea from the one before.</p>
+  <ol class="how">
+    <li><b>Pick a demo</b> and load a practice problem. Its full statement appears above the controls.</li>
+    <li><b>Predict</b> the answer. Turn on predict mode to hide results until you commit.</li>
+    <li><b>Reveal and explore.</b> Drag sliders, or use the − and + buttons for exact steps.</li>
+  </ol>
+  <p class="note">Each demo has its own problems, a "How to read this diagram" panel, common mistakes, and check-yourself questions at the bottom.</p>
+  <details class="conv" open>
+    <summary>Seven big ideas</summary>
+    <ol class="ideas" style="list-style:none;padding-left:0"><li><b>1. Light bends at surfaces.</b> Toward the normal entering a denser medium; past the critical angle it cannot exit.</li><li><b>2. Vergences add.</b> U + D = V. Diopters add; distances do not. A tear layer or lens surface is one more term.</li><li><b>3. Find the far point.</b> Every correction puts the lens's focal point on the eye's far point.</li><li><b>4. Distance changes the effect.</b> A lens moved away is perceived as more plus, so the required lens goes the other way. Closer Add Plus (required).</li><li><b>5. Each meridian is its own lens.</b> Write both meridians. The spherical equivalent is their midpoint.</li><li><b>6. Prisms.</b> Prism = decentration (cm) × power. The image shifts toward the apex.</li><li><b>7. Magnification is a ratio.</b> Eyepiece ÷ objective, D/4, or m = U / V. The sign gives orientation.</li></ol>
+  </details>
+  <details class="conv">
+    <summary>Conventions used throughout</summary>
+    <ul>
+      <li>Light travels <b>left to right</b>. Distances measured against the direction of light are <b>negative</b>.</li>
+      <li><b>Vergence</b> = n / distance (m). Real objects give diverging light, so negative vergence. Air (n = 1.00) unless stated.</li>
+      <li><b>V = U + D.</b> Magnification <b>m = U / V</b> (positive upright, negative inverted).</li>
+      <li><b>Vertex:</b> d = distance the lens moves, positive toward the eye. <i>Required</i> power F<sub>new</sub> = F / (1 − dF). <i>Perceived</i> power F<sub>perc</sub> = F / (1 + dF).</li>
+      <li>Perceived and required power always change in <b>opposite</b> directions.</li>
+      <li><b>Far and near points</b> (Optics 1) are given as dioptric distances R and P, positive in front of the eye (R = −Rx), as in the lecture.</li>
+    </ul>
+  </details>
+  <details class="conv">
+    <summary>Formula sheet</summary>
+    <ul>
+      <li><b>Snell's law:</b> n sinθ = n′ sinθ′ (angles from the normal). Critical angle: sinθ<sub>c</sub> = n<sub>2</sub> / n<sub>1</sub>.</li>
+      <li><b>Vergence:</b> V = n / d (m). <b>U + D = V.</b> Magnification m = U / V.</li>
+      <li><b>Correcting lens:</b> its secondary focal point F′ must coincide with the eye's far point.</li>
+      <li><b>Accommodation:</b> A = P − R (R = −Rx). Near add = demand − A/2.</li>
+      <li><b>Retinoscopy:</b> net = gross − working distance (67 cm = 1.50 D by convention; 50 cm = 2.00 D).</li>
+      <li><b>Vertex:</b> F<sub>new</sub> = F / (1 − dF), d positive toward the eye. Estimate: ΔF ≈ dF².</li>
+      <li><b>Astigmatism:</b> SE = sphere + cylinder / 2. Interval of Sturm (D) = |cylinder|.</li>
+      <li><b>Prentice's rule:</b> Δ = h (cm) × D.</li>
+      <li><b>Telescope:</b> M = D<sub>eyepiece</sub> / D<sub>objective</sub>; separation = f<sub>obj</sub> + f<sub>eye</sub>.</li>
+      <li><b>Magnifier:</b> M = D / 4 (D / 4 + 1 at the eye, accommodating). Kestenbaum add = acuity denominator / numerator.</li>
+      <li><b>Mirror:</b> D = 2 / r (r in meters).</li>
+      <li><b>Duochrome:</b> red clearer, add minus; green clearer, add plus.</li>
+    </ul>
+  </details>
+</header>
+
+<label class="demo-picker"><span>Demo</span>
+<select id="demoSelect" aria-label="Choose a demo">
+  <optgroup label="Optics 1">
+    <option value="o1">1. Far point and accommodation</option>
+    <option value="o2">2. Retinoscopy</option>
+    <option value="o3">3. Duochrome</option>
+    <option value="o4">4. Telescopes and magnifiers</option>
+  </optgroup>
+  <optgroup label="Optics 2">
+    <option value="d1">5. Vertex distance</option>
+    <option value="d2">6. Vergence and images</option>
+    <option value="d3">7. Conoid of Sturm</option>
+    <option value="d4">8. Prentice and slab-off</option>
+  </optgroup>
+</select></label>
+<nav class="benches" role="tablist" aria-label="Demos">
+<div class="bench">
+  <span class="bench-label">Optics 1</span>
+  <button class="tab" role="tab" aria-selected="true" data-tab="o1"><span class="num">1</span>Far point and accommodation</button>
+  <button class="tab" role="tab" aria-selected="false" data-tab="o2"><span class="num">2</span>Retinoscopy</button>
+  <button class="tab" role="tab" aria-selected="false" data-tab="o3"><span class="num">3</span>Duochrome</button>
+  <button class="tab" role="tab" aria-selected="false" data-tab="o4"><span class="num">4</span>Telescopes and magnifiers</button>
+</div>
+<div class="bench">
+  <span class="bench-label">Optics 2</span>
+  <button class="tab" role="tab" aria-selected="false" data-tab="d1"><span class="num">5</span>Vertex distance</button>
+  <button class="tab" role="tab" aria-selected="false" data-tab="d2"><span class="num">6</span>Vergence and images</button>
+  <button class="tab" role="tab" aria-selected="false" data-tab="d3"><span class="num">7</span>Conoid of Sturm</button>
+  <button class="tab" role="tab" aria-selected="false" data-tab="d4"><span class="num">8</span>Prentice and slab-off</button>
+</div>
+<div class="predict-row"><label class="predict-toggle"><input type="checkbox" id="predict"> Predict mode<span class="long">: hide answers until revealed</span></label></div>
+</nav>
+
+<!-- ============ DEMO 1 ============ -->
+<!-- ============ OPTICS 1: AMETROPIA & ACCOMMODATION ============ -->
+<section class="demo active" id="o1" role="tabpanel">
+  <h2>Far point, near point, and accommodation</h2>
+  <p class="lede">Every eye has a far point (relaxed) and a near point (full accommodation). Set the refractive error and amplitude, then move the target and see whether the eye can bring it onto the retina.</p>
+  <p class="keyidea"><b>Key idea</b> <span class="ideatag">Big idea 3</span><b>:</b> The far point is where the relaxed eye is focused; the near point is where full accommodation takes it. Amplitude A = P − R.</p>
+  <div class="problem" id="prob-o1" aria-live="polite"></div>
+  <div class="stage"><svg id="svgO1" viewBox="0 0 960 420" role="img" aria-label="Schematic eye focusing a target, with a dioptric ruler"></svg></div>
+  <details class="legend"><summary>How to read this diagram</summary><ul><li><b>Gold lines:</b> light from the target entering the eye.</li><li><b>Green dot on the retina:</b> sharp focus. <b>Gold bar on the retina:</b> blur; its height shows how much.</li><li><b>Dioptric ruler:</b> diopters in front of the eye. 0 is infinity; values grow as objects come closer (2.5 D = 40 cm).</li><li><b>Gray zone at the left:</b> points behind the eye (virtual). An uncorrected hyperope's far point sits here.</li><li><b>Green dot:</b> far point. <b>Maroon dot:</b> near point. <b>Green bar between them:</b> range of clear vision. <b>Triangle:</b> the target.</li></ul></details>
+  <div class="prompt" id="promptO1"></div>
+  <div class="after-prompt"><button class="reveal reveal-top" data-demo="o1">Reveal answers</button><details class="guide" open><summary>Try this</summary><ol><li>Load “Frenella: −15 D, 10 D” and predict her far point and near point before revealing.</li><li>Slide the target from infinity toward the eye. Find where it turns sharp, then where it blurs again.</li><li>Switch to “Full correction at the eye.” The far point moves to infinity; the amplitude stays the same.</li></ol></details></div>
+  <div class="grid">
+    <div class="panel">
+      <h3>Set up the eye</h3>
+      <div class="ctrl"><label for="o1R">Refractive error (at the eye) <output id="o1Ro"></output></label><input type="range" id="o1R" min="-15" max="10" step="0.25" value="-15"></div>
+      <div class="ctrl"><label>Cause of the ametropia</label>
+        <div class="seg" id="o1type"><button aria-pressed="true" data-v="axial">Axial (length)</button><button aria-pressed="false" data-v="refr">Refractive (power)</button></div>
+      </div>
+      <div class="ctrl"><label for="o1A">Amplitude of accommodation <output id="o1Ao"></output></label><input type="range" id="o1A" min="0" max="50" step="0.5" value="10"></div>
+      <div class="ctrl"><label for="o1T">Target distance <output id="o1To"></output></label><input type="range" id="o1T" min="0" max="30" step="0.25" value="0"></div>
+      <div class="ctrl"><label>Correction</label>
+        <div class="seg" id="o1corr"><button aria-pressed="true" data-v="none">Uncorrected</button><button aria-pressed="false" data-v="cl">Full correction at the eye</button></div>
+      </div>
+      <h3>Practice problems</h3>
+      <div class="presets" id="o1pre">
+        <button data-p="0,50,0,none" data-q="Lisa, an emmetropic child, has 50 D of accommodation. Where are her far point and near point, and what is her range of accommodation?">Lisa: emmetrope, 50 D</button>
+        <button data-p="8,20,0,none" data-q="Prentice is a +8.00 D hyperope with 20 D of accommodation. Without glasses, where are his far point and near point? How much accommodation does he spend just to see at distance?">Prentice: +8 D, 20 D</button>
+        <button data-p="8,20,0,cl" data-q="Prentice (+8.00 D, 20 D of accommodation) is now fully corrected with contact lenses. Where are his far point and near point?">Prentice, corrected</button>
+        <button data-p="-15,10,0,none" data-q="Frenella is a −15.00 D myope with 10 D of accommodation. Without correction, what is her range of clear vision?" data-default>Frenella: −15 D, 10 D</button>
+        <button data-p="-15,10,0,cl" data-q="Frenella (−15.00 D, 10 D of accommodation) is now fully corrected with contact lenses. What is her range of clear vision?">Frenella, corrected</button>
+        <button data-p="0,1.5,2.5,none" data-q="An emmetropic presbyope has 1.50 D of accommodation and wants to read at 40 cm. Can she see the page clearly? What add keeps half her amplitude in reserve?">Presbyope reading at 40 cm</button>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Results</h3>
+      <dl class="read">
+        <dt>Eye</dt><dd id="rO1eye"></dd>
+        <dt>Far point</dt><dd class="ans" id="rO1fp"></dd>
+        <dt>Near point</dt><dd class="ans" id="rO1np"></dd>
+        <dt>Range of clear vision</dt><dd class="ans" id="rO1range"></dd>
+        <dt>Accommodation used for target</dt><dd class="ans" id="rO1use"></dd>
+        <dt>Near add (half amplitude in reserve)</dt><dd class="ans" id="rO1add"></dd>
+      </dl>
+      <div class="formula ans" id="rO1form"></div>
+      <div class="status ans" id="rO1status" aria-live="polite"></div>
+      <button class="reveal" data-demo="o1">Reveal answers</button>
+      <p class="note">R and P are the dioptric distances of the far and near points (positive in front of the eye; R = −Rx). Correction is modeled at the eye (contact lens), so no vertex effect. Focus shifts inside the eye are drawn 4× larger.</p>
+    </div>
+  </div>
+<details class="selfwrap" open><summary>Common mistakes and self-check</summary><div class="selfcheck"><div><h3>Watch out</h3><ul><li>R = −Rx. Myopes have a far point in front of the eye; hyperopes have one behind it.</li><li>Accommodation only adds plus, so it can never rescue a target beyond a myope's far point.</li><li>An uncorrected hyperope spends accommodation just to see at distance, which pushes the near point away.</li></ul></div><div><h3>Check yourself</h3><details class="qa"><summary>An uncorrected −4.00 D myope has 6.00 D of amplitude. Where are the far point and near point?</summary><p>Far point first (idea 3): R = +4 D, so 25 cm. Accommodation adds 6 D: P = 10 D, so 10 cm. Clear from 25 to 10 cm.</p></details><details class="qa"><summary>An emmetrope with 2.00 D of amplitude wants to read at 40 cm. Keeping half in reserve, what add?</summary><p>The demand at 40 cm is 2.50 D. She should use only half her 2.00 D (1.00 D), so the add supplies the rest: +1.50 D.</p></details></div></div></details>
+</section>
+
+<!-- ============ OPTICS 1: RETINOSCOPY ============ -->
+<section class="demo" id="o2" role="tabpanel">
+  <h2>Retinoscopy</h2>
+  <p class="lede">The reflex is light leaving the patient's eye and heading for its far point. Against motion means the far point lies between the eye and your peephole; with motion means it lies beyond you or behind the eye. Neutralize, then subtract the working distance.</p>
+  <p class="keyidea"><b>Key idea</b> <span class="ideatag">Big idea 3</span><b>:</b> Against motion: the far point is between the eye and you. With motion: it is beyond you or behind the eye. Neutral: it is at your peephole. Net = gross − working distance.</p>
+  <div class="problem" id="prob-o2" aria-live="polite"></div>
+  <div class="stage two">
+    <div><svg id="svgO2a" viewBox="0 0 960 300" role="img" aria-label="Side view of retinoscopy with far point and peephole"></svg></div>
+    <div><svg id="svgO2b" viewBox="0 0 280 280" role="img" aria-label="Pupil view of the retinoscopic reflex"></svg><div class="caption ans" id="capO2"></div></div>
+  </div>
+  <details class="legend"><summary>How to read this diagram</summary><ul><li><b>Left panel, gold lines:</b> light leaving the patient's eye, heading for its far point (green dot).</li><li><b>Shaded zone:</b> between the eye and your peephole. A far point here gives against motion.</li><li><b>Right panel, faint band:</b> your streak sweeping across the face. <b>Bright band in the pupil:</b> the reflex.</li><li>Reflex moves the <b>same way</b> as the streak = with. <b>Opposite way</b> = against. <b>Whole pupil glows</b> = neutral.</li></ul></details>
+  <div class="prompt" id="promptO2"></div>
+  <div class="after-prompt"><button class="reveal reveal-top" data-demo="o2">Reveal answers</button><details class="guide" open><summary>Try this</summary><ol><li>Load “−3.00 myope” and predict with or against before revealing.</li><li>Add minus in 0.25 D steps. The reflex speeds up, brightens, and widens as you approach neutral.</li><li>Press “New mystery patient,” neutralize, write down the net Rx, then press “Show the Rx.”</li></ol></details></div>
+  <div class="grid">
+    <div class="panel">
+      <h3>Set up the exam</h3>
+      <div class="ctrl"><label for="o2R">Patient's refractive error <output id="o2Ro"></output></label><input type="range" id="o2R" min="-8" max="8" step="0.25" value="-3"></div>
+      <div class="ctrl"><label>Working distance</label>
+        <div class="seg" id="o2wd"><button aria-pressed="false" data-v="50">50 cm (2.00 D)</button><button aria-pressed="true" data-v="67">67 cm (1.50 D)</button><button aria-pressed="false" data-v="100">100 cm (1.00 D)</button></div>
+      </div>
+      <div class="ctrl"><label for="o2L">Trial lens in front of the eye <output id="o2Lo"></output></label><input type="range" id="o2L" min="-10" max="12" step="0.25" value="0"></div>
+      <div class="presets">
+        <button id="o2minus">−0.25</button><button id="o2plus">+0.25</button>
+        <button id="o2mystery" data-q="Mystery patient: the refractive error is hidden. Neutralize the reflex with the −0.25 / +0.25 buttons, calculate the net Rx, then press &quot;Show the Rx&quot; to check.">New mystery patient</button><button id="o2show">Show the Rx</button>
+      </div>
+      <h3>Practice problems</h3>
+      <div class="presets" id="o2pre">
+        <button data-p="1.5,67,0" data-q="Retinoscope this patient at 67 cm. Which motion do you see first? What lens neutralizes the reflex, and what is the net Rx?">Hyperope at 67 cm</button>
+        <button data-p="-3,67,0" data-q="A −3.00 D myope is examined at 67 cm with no lens. Predict the motion, then neutralize. What is the gross, and does the net come out to −3.00 D?" data-default>−3.00 myope</button>
+        <button data-p="-1.5,67,0" data-q="A −1.50 D myope is examined at 67 cm with no lens in front of the eye. What do you see, and why?">−1.50 myope at 67 cm</button>
+        <button data-p="2,50,0" data-q="A +2.00 D hyperope is examined at 50 cm. Predict the motion and the lens that will neutralize it.">+2.00 hyperope at 50 cm</button>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Results</h3>
+      <dl class="read">
+        <dt>Reflex motion</dt><dd class="ans" id="rO2mot"></dd>
+        <dt>Far point (with trial lens)</dt><dd class="ans" id="rO2fp"></dd>
+        <dt>Peephole</dt><dd id="rO2pp"></dd>
+        <dt>Next step</dt><dd class="ans" id="rO2next"></dd>
+        <dt>Gross at neutral</dt><dd class="ans" id="rO2gross"></dd>
+        <dt>Net Rx</dt><dd class="ans" id="rO2net"></dd>
+      </dl>
+      <div class="formula ans" id="rO2form"></div>
+      <button class="reveal" data-demo="o2">Reveal answers</button>
+      <p class="note">Spherical refractive errors only; the trial lens is modeled at the eye. "With" = add plus; "against" = add minus. Near neutral the reflex gets faster, brighter, and wider.</p>
+    </div>
+  </div>
+<details class="selfwrap" open><summary>Common mistakes and self-check</summary><div class="selfcheck"><div><h3>Watch out</h3><ul><li>Always subtract the working distance: 67 cm = 1.50 D (by convention), 50 cm = 2.00 D.</li><li>With = add plus. Against = add minus.</li><li>The working distance comes off the sphere only, never the cylinder.</li></ul></div><div><h3>Check yourself</h3><details class="qa"><summary>At 50 cm you neutralize with +1.00 D. What is the net Rx?</summary><p>Neutral puts the far point at your peephole, so remove the working distance: +1.00 − 2.00 = −1.00 D.</p></details><details class="qa"><summary>A −0.50 D myope is examined at 67 cm with no lens. With or against? Why?</summary><p>With. Its far point (1 / 0.5 D = 2 m) lies beyond your 67 cm peephole.</p></details></div></div></details>
+</section>
+
+<!-- ============ OPTICS 1: DUOCHROME ============ -->
+<section class="demo" id="o3" role="tabpanel">
+  <h2>Duochrome and chromatic aberration</h2>
+  <p class="lede">Shorter wavelengths refract more, so green focuses in front of red. The duochrome straddles the retina with the two colors: whichever side focuses closer to the retina looks sharper. No color discrimination is needed, so it works for color-deficient patients.</p>
+  <p class="keyidea"><b>Key idea</b> <span class="ideatag">Big idea 1, 3</span><b>:</b> Green focuses in front of red. Red clearer, add minus; green clearer, add plus (RAM-GAP).</p>
+  <div class="problem" id="prob-o3" aria-live="polite"></div>
+  <div class="stage two">
+    <div><svg id="svgO3a" viewBox="0 0 960 300" role="img" aria-label="Green, yellow, and red foci relative to the retina"></svg></div>
+    <div><svg id="svgO3b" viewBox="0 0 280 280" role="img" aria-label="Duochrome chart as the patient sees it"></svg><div class="caption ans" id="capO3"></div></div>
+  </div>
+  <details class="legend"><summary>How to read this diagram</summary><ul><li><b>Green, red, and dashed yellow lines:</b> the cone of light for each color converging and diverging.</li><li><b>Dots:</b> where each color focuses. <b>Maroon line:</b> the retina. Positions are in diopters, spacing exaggerated.</li><li><b>Right panel:</b> the chart as the patient sees it. Each side is blurred according to how far its color focuses from the retina.</li></ul></details>
+  <div class="prompt" id="promptO3"></div>
+  <div class="after-prompt"><button class="reveal reveal-top" data-demo="o3">Reveal answers</button><details class="guide" open><summary>Try this</summary><ol><li>Load “Myope, under-minused” and predict which side looks sharper.</li><li>Press “Add −0.25” until the two sides match.</li><li>Try “Hyperope, under-plussed.” The rule is identical, because it depends on where the focus sits, not on the type of refractive error.</li></ol></details></div>
+  <div class="grid">
+    <div class="panel">
+      <h3>Refine the sphere</h3>
+      <div class="ctrl"><label for="o3R">Patient's true refractive error <output id="o3Ro"></output></label><input type="range" id="o3R" min="-6" max="6" step="0.25" value="-3"></div>
+      <div class="ctrl"><label for="o3S">Sphere in the phoropter <output id="o3So"></output></label><input type="range" id="o3S" min="-8" max="8" step="0.25" value="-2.5"></div>
+      <div class="presets"><button id="o3minus">Add −0.25</button><button id="o3plus">Add +0.25</button></div>
+      <h3>Practice problems</h3>
+      <div class="presets" id="o3pre">
+        <button data-p="-3,-2.5" data-q="The patient&#x27;s true refractive error is −3.00 D, and the phoropter reads −2.50 D. Which side of the duochrome looks sharper, and which way should you change the sphere?" data-default>Myope, under-minused</button>
+        <button data-p="-3,-3.5" data-q="The patient&#x27;s true refractive error is −3.00 D, and the phoropter reads −3.50 D. Which side looks sharper, and what do you do?">Myope, over-minused</button>
+        <button data-p="2,1.5" data-q="The patient&#x27;s true refractive error is +2.00 D, and the phoropter reads +1.50 D. Which side looks sharper, and what do you do?">Hyperope, under-plussed</button>
+        <button data-p="-3,-3" data-q="The patient&#x27;s true refractive error is −3.00 D, and the phoropter reads −3.00 D. What does the patient report?">Balanced endpoint</button>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Results</h3>
+      <dl class="read">
+        <dt>Residual (yellow focus)</dt><dd class="ans" id="rO3res"></dd>
+        <dt>Clearer side</dt><dd class="ans" id="rO3clear"></dd>
+        <dt>Next step</dt><dd class="ans" id="rO3next"></dd>
+      </dl>
+      <div class="formula">Memory aid: <b>RAM-GAP</b>. Red clearer, Add Minus. Green clearer, Add Plus.</div>
+      <div class="status ans" id="rO3status" aria-live="polite"></div>
+      <button class="reveal" data-demo="o3">Reveal answers</button>
+      <p class="note">The eye's longitudinal chromatic aberration spans roughly 2 D across the visible spectrum; the duochrome filters sit about a quarter diopter either side of yellow. Many examiners end on equal clarity or a slight red preference to avoid over-minusing.</p>
+    </div>
+  </div>
+<details class="selfwrap" open><summary>Common mistakes and self-check</summary><div class="selfcheck"><div><h3>Watch out</h3><ul><li>Green clearer means over-minused. End on equal, or slightly red.</li><li>The test relies on chromatic aberration, not color vision, so it works for color-deficient patients.</li></ul></div><div><h3>Check yourself</h3><details class="qa"><summary>The patient says red is sharper. What next?</summary><p>Red focuses closest to the retina, so all the foci sit in front of it: under-minused. Add minus (RAM).</p></details><details class="qa"><summary>You add −0.25 D and green becomes sharper. What happened?</summary><p>Green now focuses closer than red: the foci moved behind the retina, so you over-minused by about 0.25 D. Go back one step.</p></details></div></div></details>
+</section>
+
+<!-- ============ OPTICS 1: TELESCOPES & MAGNIFIERS ============ -->
+<section class="demo" id="o4" role="tabpanel">
+  <h2>Telescopes and magnifiers</h2>
+  <p class="lede">An afocal telescope turns parallel light into parallel light at a new angle. A weak objective and a strong eyepiece magnify; swap them and the telescope minifies.</p>
+  <p class="keyidea"><b>Key idea</b> <span class="ideatag">Big idea 7</span><b>:</b> Magnification = eyepiece power ÷ objective power. Keplerian: two plus lenses, inverted, longer. Galilean: plus objective and minus eyepiece, upright, shorter.</p>
+  <div class="problem" id="prob-o4" aria-live="polite"></div>
+  <div class="stage"><svg id="svgO4" viewBox="0 0 960 340" role="img" aria-label="Telescope ray diagram"></svg></div>
+  <details class="legend"><summary>How to read this diagram</summary><ul><li><b>Gold lines:</b> a parallel bundle from a distant object on the axis. A narrower bundle leaving the eyepiece means magnification.</li><li><b>Maroon line:</b> light from an off-axis object. It leaves at a steeper angle when magnified; leaving on the opposite side means the image is inverted.</li><li><b>F′ obj:</b> the objective's focal point. Keplerian rays cross here (real intermediate image); in a Galilean telescope it lies beyond the eyepiece (dashed, virtual).</li></ul></details>
+  <div class="prompt" id="promptO4"></div>
+  <div class="after-prompt"><button class="reveal reveal-top" data-demo="o4">Reveal answers</button><details class="guide" open><summary>Try this</summary><ol><li>Load “Keplerian +5 / +15” and predict the magnification, orientation, and length.</li><li>Press “Lenses swapped.” The same pair of lenses now minifies.</li><li>Load “Galilean +10 / −30” and compare its length and orientation with the Keplerian.</li></ol></details></div>
+  <div class="grid">
+    <div class="panel">
+      <h3>Build the telescope</h3>
+      <div class="ctrl"><label for="o4o">Objective (front lens) <output id="o4oo"></output></label><input type="range" id="o4o" min="1" max="30" step="0.5" value="5"></div>
+      <div class="ctrl"><label for="o4e">Eyepiece (ocular) <output id="o4eo"></output></label><input type="range" id="o4e" min="-40" max="40" step="0.5" value="15"></div>
+      <h3>Practice problems</h3>
+      <div class="presets" id="o4pre">
+        <button data-p="5,15" data-q="A telescope has a +5.00 D objective and a +15.00 D eyepiece. What type is it? What are its magnification, image orientation, and lens separation?" data-default>Keplerian +5 / +15</button>
+        <button data-p="5,25" data-q="A telescope is built from a +25.00 D lens and a +5.00 D lens. Which should be the objective? What type of telescope is it, how much does it magnify, and how far apart are the lenses?">+25 and +5 lenses</button>
+        <button data-p="10,-30" data-q="A telescope has a +10.00 D objective and a −30.00 D eyepiece. What type is it? What are its magnification, orientation, and length?">Galilean +10 / −30</button>
+        <button data-p="15,5" data-q="The +5.00 D and +15.00 D lenses are reversed: +15.00 D objective, +5.00 D eyepiece. What happens to the image?">Lenses swapped</button>
+      </div>
+      <h3>Hand magnifier and Kestenbaum</h3>
+      <div class="ctrl"><label for="o4m">Magnifier power <output id="o4mo"></output></label><input type="range" id="o4m" min="4" max="40" step="1" value="20"></div>
+      <div class="ctrl"><label for="o4k">Best-corrected acuity, 20 / <output id="o4ko"></output></label><input type="range" id="o4k" min="40" max="800" step="10" value="200"></div>
+    </div>
+    <div class="panel">
+      <h3>Results</h3>
+      <dl class="read">
+        <dt>Telescope type</dt><dd class="ans" id="rO4type"></dd>
+        <dt>Angular magnification</dt><dd class="ans" id="rO4mag"></dd>
+        <dt>Lens separation</dt><dd class="ans" id="rO4sep"></dd>
+      </dl>
+      <div class="formula ans" id="rO4form"></div>
+      <dl class="read" style="margin-top:14px">
+        <dt>Magnifier focal length (object distance)</dt><dd class="ans" id="rO4f"></dd>
+        <dt>Conventional rating, D/4</dt><dd class="ans" id="rO4m1"></dd>
+        <dt>Lens at eye, accommodating, D/4 + 1</dt><dd class="ans" id="rO4m2"></dd>
+        <dt>Kestenbaum starting add</dt><dd class="ans" id="rO4kest"></dd>
+      </dl>
+      <button class="reveal" data-demo="o4">Reveal answers</button>
+      <p class="note">M = D<sub>eyepiece</sub> / D<sub>objective</sub> in magnitude; the sign of −D<sub>eye</sub>/D<sub>obj</sub> gives orientation (negative = inverted). Some manufacturers label D/4 + 1 as "trade magnification"; this bench uses D/4 as the conventional rating. Kestenbaum starting add = acuity denominator / 20 (the inverse of the Snellen fraction), a starting point for reading 1M print.</p>
+    </div>
+  </div>
+<details class="selfwrap" open><summary>Common mistakes and self-check</summary><div class="selfcheck"><div><h3>Watch out</h3><ul><li>The stronger lens is the eyepiece. Making it the objective builds a reverse telescope.</li><li>A Galilean eyepiece has a negative focal length, so its tube is shorter: f<sub>obj</sub> − |f<sub>eye</sub>|.</li><li>Magnifier ratings vary: this tool uses D/4; some manufacturers label D/4 + 1 as "trade magnification."</li></ul></div><div><h3>Check yourself</h3><details class="qa"><summary>+4.00 D objective, +20.00 D eyepiece: type, magnification, orientation, length?</summary><p>Magnification is eyepiece ÷ objective (idea 7): 20 / 4 = 5×. Two plus lenses: Keplerian, inverted. Length 25 + 5 = 30 cm.</p></details><details class="qa"><summary>Galilean +8.00 / −24.00: magnification and length? Kestenbaum add for 20/160?</summary><p>24 / 8 = 3×; the minus eyepiece keeps it upright (Galilean). Length 12.5 − 4.17 = 8.3 cm. Kestenbaum: 160 / 20 = +8.00 D.</p></details></div></div></details>
+</section>
+
+<section class="demo" id="d1" role="tabpanel">
+  <h2>Vertex distance and effective power</h2>
+  <p class="lede">The patient is fully corrected at the original vertex. Move the lens and watch the focus leave the retina. Then switch to the required lens to bring it back.</p>
+  <p class="keyidea"><b>Key idea</b> <span class="ideatag">Big idea 3, 4</span><b>:</b> A lens moved away from the eye is perceived as more plus, so the required power shifts the opposite way. Closer Add Plus (CAP).</p>
+  <div class="problem" id="prob-d1" aria-live="polite"></div>
+  <div class="stage"><svg id="svg1" viewBox="0 0 960 290" role="img" aria-label="Lens in front of a schematic eye with rays"></svg></div>
+  <details class="legend"><summary>How to read this diagram</summary><ul><li><b>Gold lines:</b> light from a distant object through the lens and into the eye.</li><li><b>Dashed lens:</b> the original position. <b>Solid lens:</b> where it is now.</li><li><b>Green dot:</b> the eye's far point. <b>Gold dot (Lens F′):</b> the lens focal point. The patient is corrected only when the two coincide.</li><li><b>Gold bar on the retina:</b> blur. <b>Green dot on the retina:</b> sharp focus.</li></ul></details>
+  <div class="prompt" id="prompt1"></div>
+  <div class="after-prompt"><button class="reveal reveal-top" data-demo="d1">Reveal answers</button><details class="guide" open><summary>Try this</summary><ol><li>Load “−10 D, 10→20 mm” and predict: does the patient become myopic or hyperopic?</li><li>Switch to the required lens and compare its power with the perceived power of the original lens.</li><li>Load “−7 D to contact lens” and confirm CAP: the contact needs less minus than the glasses.</li></ol></details></div>
+  <div class="grid">
+    <div class="panel">
+      <h3>Set up the patient</h3>
+      <div class="ctrl"><label for="d1F">Spectacle Rx (fully corrects) <output id="d1Fo"></output></label><input type="range" id="d1F" min="-20" max="20" step="0.25" value="-10"></div>
+      <div class="ctrl"><label for="d1d0">Original vertex distance <output id="d1d0o"></output></label><input type="range" id="d1d0" min="8" max="16" step="1" value="10"></div>
+      <div class="ctrl"><label for="d1v">New lens position (0 mm = contact lens) <output id="d1vo"></output></label><input type="range" id="d1v" min="0" max="30" step="1" value="20"></div>
+      <div class="ctrl"><label>Lens in place</label>
+        <div class="seg" id="d1mode"><button aria-pressed="true" data-v="same">Keep the same lens</button><button aria-pressed="false" data-v="req">Switch to the required lens</button></div>
+      </div>
+      <h3>Practice problems</h3>
+      <div class="presets" id="d1pre">
+        <button data-p="-10,10,20" data-q="A patient is fully corrected with −10.00 D spectacles at a vertex distance of 10 mm. What correction is needed if the spectacles sit 20 mm from the eye?" data-default>−10 D, 10→20 mm</button>
+        <button data-p="10,10,20" data-q="The same patient is instead a +10.00 D hyperope (10 mm vertex, moved to 20 mm). What power is needed? A. +11.10  B. +10.10  C. +9.10  D. +8.10">+10 D, 10→20 mm</button>
+        <button data-p="-8,12,22" data-q="A patient is fully corrected with −8.00 D lenses 12 mm from the cornea. If the spectacles move to 22 mm, what power gives clear distance vision? A. −7.25  B. −7.75  C. −8.25  D. −8.75">−8 D, 12→22 mm</button>
+        <button data-p="9,14,24" data-q="A patient is fully corrected with +9.00 D lenses 14 mm from the cornea. If the spectacles move to 24 mm, what power maintains clear distance vision? A. +9.75  B. +9.25  C. +8.25  D. +7.75">+9 D, 14→24 mm</button>
+        <button data-p="-7,15,0" data-q="A spectacle Rx of −7.00 D is worn at 15 mm. What contact lens power (at ~0 mm) should you start with? A. −6.00  B. −6.25  C. −6.50  D. −7.00">−7 D to contact lens</button>
+        <button data-p="6,12,9" data-q="A patient wears +6.00 D glasses at 12 mm. A new frame sits at 9 mm. What lens power is needed in the new frame?">+6 D, 12→9 mm</button>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Results</h3>
+      <dl class="read">
+        <dt>Lens moved</dt><dd id="r1move"></dd>
+        <dt>Perceived power of the same lens</dt><dd class="ans" id="r1perc"></dd>
+        <dt>Required power at new position</dt><dd class="ans" id="r1req"></dd>
+        <dt>Estimated change in required power, dF²</dt><dd class="ans" id="r1est"></dd>
+        <dt>Far point (from cornea)</dt><dd id="r1fp"></dd>
+      </dl>
+      <div class="formula ans" id="r1form"></div>
+      <div class="status ans" id="r1status" aria-live="polite"></div>
+      <button class="reveal" data-demo="d1">Reveal answers</button>
+      <p class="note">Inside the eye, the focus shift is drawn 8× larger so it is visible. The gold bar on the retina shows the size of the blur.</p>
+    </div>
+  </div>
+<details class="selfwrap" open><summary>Common mistakes and self-check</summary><div class="selfcheck"><div><h3>Watch out</h3><ul><li>Perceived and required power move in opposite directions. Read which one the question asks for.</li><li>The 4-6-8-10 rule is for spectacle ↔ contact lens only. For frame changes, estimate ΔF ≈ dF².</li><li>Vertex matters above ±4.00 D.</li></ul></div><div><h3>Check yourself</h3><details class="qa"><summary>A −12.00 D spectacle Rx at 12 mm. What contact lens power do you start with?</summary><p>Closer Add Plus: the contact needs less minus. The far point is 83.3 + 12 = 95.3 mm from the cornea: −10.49, order −10.50 D.</p></details><details class="qa"><summary>A +12.00 D lens at 10 mm is refit at 15 mm. What power is now required?</summary><p>A plus lens moved away is perceived as stronger, so the required lens needs less plus (idea 4). Far point 83.3 − 10 = 73.3 mm behind the cornea; 73.3 + 15 = 88.3 mm: +11.32 D.</p></details></div></div></details>
+</section>
+
+<!-- ============ DEMO 2 ============ -->
+<section class="demo" id="d2" role="tabpanel">
+  <h2>Vergence and image formation</h2>
+  <p class="lede">Place a real object in front of a thin lens. The three principal rays find the image; dashed lines are virtual extensions. Watch the sign of V and of m.</p>
+  <p class="keyidea"><b>Key idea</b> <span class="ideatag">Big idea 2, 7</span><b>:</b> V = U + D. A negative image distance means a virtual image; the sign of m = U / V tells you upright or inverted.</p>
+  <div class="problem" id="prob-d2" aria-live="polite"></div>
+  <div class="stage"><svg id="svg2" viewBox="0 0 960 400" role="img" aria-label="Thin lens ray diagram"></svg></div>
+  <details class="legend"><summary>How to read this diagram</summary><ul><li><b>Maroon arrow:</b> the object. <b>Blue arrow:</b> the image (solid = real, dashed = virtual).</li><li><b>Gold lines:</b> the three principal rays. <b>Dashed gray lines:</b> virtual extensions traced backward to a virtual image.</li><li><b>F and F′:</b> the primary and secondary focal points. The scale adjusts automatically and is shown at the bottom left.</li></ul></details>
+  <div class="prompt" id="prompt2"></div>
+  <div class="after-prompt"><button class="reveal reveal-top" data-demo="d2">Reveal answers</button><details class="guide" open><summary>Try this</summary><ol><li>Load “−8 D lens, object 33 cm” and predict real or virtual before revealing.</li><li>Load “Real image at 2f,” then slide the object toward F. The image runs away to infinity.</li><li>Move the object inside F to turn the lens into a magnifier (try “+12.5 D lens, object 6 cm”).</li></ol></details></div>
+  <div class="grid">
+    <div class="panel">
+      <h3>Set up the lens</h3>
+      <div class="ctrl"><label for="d2u">Object distance (in front of lens) <output id="d2uo"></output></label><input type="range" id="d2u" min="2" max="100" step="1" value="33"></div>
+      <div class="ctrl"><label for="d2D">Lens power <output id="d2Do"></output></label><input type="range" id="d2D" min="-20" max="20" step="0.25" value="-8"></div>
+      <h3>Practice problems</h3>
+      <div class="presets" id="d2pre">
+        <button data-p="33,-8" data-q="A −8.00 D lens receives light from a point source 33 cm away. Where is the image formed, and is it real or virtual?" data-default>−8 D lens, object 33 cm</button>
+        <button data-p="6,12.5" data-q="A +12.50 D lens has an object 6 cm in front of it. Where is the image, is it real or virtual, and what is the magnification?">+12.5 D lens, object 6 cm</button>
+        <button data-p="40,5" data-q="A +5.00 D lens has an object 40 cm away (twice its focal length). Describe the image: location, type, orientation, and size.">Real image at 2f</button>
+        <button data-p="10,10" data-q="A +10.00 D lens has an object 10 cm away. Where is the image?">Object at F</button>
+        <button data-p="4,20" data-q="A +20.00 D magnifier is held with the object 4 cm away. Where is the image, and how much is it magnified? Compare with the rated magnification, D/4.">+20 D magnifier, object 4 cm</button>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Results</h3>
+      <dl class="read">
+        <dt>Object vergence U</dt><dd id="r2U"></dd>
+        <dt>Image vergence V = U + D</dt><dd class="ans" id="r2V"></dd>
+        <dt>Image location</dt><dd class="ans" id="r2v"></dd>
+        <dt>Image type</dt><dd class="ans" id="r2type"></dd>
+        <dt>Magnification m = U / V</dt><dd class="ans" id="r2m"></dd>
+      </dl>
+      <div class="formula ans" id="r2form"></div>
+      <button class="reveal" data-demo="d2">Reveal answers</button>
+    </div>
+  </div>
+<details class="selfwrap" open><summary>Common mistakes and self-check</summary><div class="selfcheck"><div><h3>Watch out</h3><ul><li>Real objects always give negative U. Dropping the sign is the most common error.</li><li>Negative image distance = virtual. With this convention m = U / V; negative m = inverted.</li></ul></div><div><h3>Check yourself</h3><details class="qa"><summary>+4.00 D lens, object 50 cm away. Image location, type, magnification?</summary><p>U = −2 and D = +2 give V = +2: a real image 50 cm behind; m = U / V = −1 (inverted, same size). This is the 2f position.</p></details><details class="qa"><summary>−5.00 D lens, object 20 cm away. Image location, type, magnification?</summary><p>A minus lens spreads light further: V = −5 − 5 = −10 D, virtual, 10 cm in front; m = U / V = +0.5 (upright, minified).</p></details></div></div></details>
+</section>
+
+<!-- ============ DEMO 3 ============ -->
+<section class="demo" id="d3" role="tabpanel">
+  <h2>Conoid of Sturm</h2>
+  <p class="lede">An uncorrected spherocylinder focuses light into two perpendicular focal lines. Choose a correction, then scan the viewing plane through the conoid to see the blur change shape. Positions are in diopters relative to the retina.</p>
+  <p class="keyidea"><b>Key idea</b> <span class="ideatag">Big idea 5</span><b>:</b> Two focal lines form, each perpendicular to the meridian that creates it. The spherical equivalent puts the circle of least confusion on the retina.</p>
+  <div class="problem" id="prob-d3" aria-live="polite"></div>
+  <div class="stage two">
+    <div><svg id="svg3a" viewBox="0 0 960 340" role="img" aria-label="Side view of the conoid of Sturm"></svg></div>
+    <div><svg id="svg3b" viewBox="0 0 280 280" role="img" aria-label="Blur pattern at the viewing plane"></svg><div class="caption ans" id="cap3"></div></div>
+  </div>
+  <details class="legend"><summary>How to read this diagram</summary><ul><li><b>Two shaded bowties:</b> light in each principal meridian. Colors match the focal line labels.</li><li><b>Dots:</b> the two focal lines. <b>Open circle:</b> circle of least confusion. <b>Maroon line:</b> retina. <b>Dashed line:</b> viewing plane.</li><li><b>Right panel:</b> the blur shape at the viewing plane, seen from the examiner's side (0° at right, 90° at top).</li></ul></details>
+  <div class="prompt" id="prompt3"></div>
+  <div class="after-prompt"><button class="reveal reveal-top" data-demo="d3">Reveal answers</button><details class="guide" open><summary>Try this</summary><ol><li>Load “+2.00 −3.00 × 180” and predict which focal line lies in front of the retina, and its orientation.</li><li>Choose “Spherical equivalent” and confirm the circle of least confusion lands on the retina.</li><li>Drag the viewing plane through the conoid: line, circle, line.</li></ol></details></div>
+  <div class="grid">
+    <div class="panel">
+      <h3>Patient Rx</h3>
+      <div class="ctrl"><label for="d3S">Sphere <output id="d3So"></output></label><input type="range" id="d3S" min="-6" max="6" step="0.25" value="2"></div>
+      <div class="ctrl"><label for="d3C">Cylinder <output id="d3Co"></output></label><input type="range" id="d3C" min="-6" max="6" step="0.25" value="-3"></div>
+      <div class="ctrl"><label for="d3A">Axis <output id="d3Ao"></output></label><input type="range" id="d3A" min="1" max="180" step="1" value="180"></div>
+      <div class="ctrl"><label>Correction worn</label>
+        <div class="seg" id="d3corr"><button aria-pressed="true" data-v="none">None</button><button aria-pressed="false" data-v="se">Spherical equivalent</button><button aria-pressed="false" data-v="full">Full Rx</button></div>
+      </div>
+      <div class="ctrl"><label for="d3z">Viewing plane (0 = retina) <output id="d3zo"></output></label><input type="range" id="d3z" min="-6" max="6" step="0.25" value="0"></div>
+      <h3>Practice problems</h3>
+      <div class="presets" id="d3pre">
+        <button data-p="2,-3,180" data-q="Rx: +2.00 −3.00 × 180. What is the spherical equivalent? Is it with-the-rule or against-the-rule? Where do the focal lines fall uncorrected, and with the spherical equivalent?" data-default>+2.00 −3.00 × 180</button>
+        <button data-p="-2,4,87" data-q="Rx: −2.00 +4.00 × 087. What is the interval of Sturm in diopters? Write the Rx in minus-cylinder form.">−2.00 +4.00 × 087</button>
+        <button data-p="-1,-2,90" data-q="Rx: −1.00 −2.00 × 090. Is this with-the-rule or against-the-rule? Uncorrected, which focal line lies closer to the retina, and how is it oriented?">−1.00 −2.00 × 090</button>
+        <button data-p="-1.5,-1.5,45" data-q="Rx: −1.50 −1.50 × 045. How are the focal lines oriented?">−1.50 −1.50 × 045</button>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Results</h3>
+      <dl class="read">
+        <dt>Minus-cylinder form</dt><dd id="r3minus"></dd>
+        <dt>Plus-cylinder form</dt><dd class="ans" id="r3plus"></dd>
+        <dt>Principal meridian powers</dt><dd id="r3mer"></dd>
+        <dt>Spherical equivalent</dt><dd class="ans" id="r3se"></dd>
+        <dt>Interval of Sturm</dt><dd class="ans" id="r3ios"></dd>
+        <dt>Type</dt><dd class="ans" id="r3type"></dd>
+      </dl>
+      <div class="status ans" id="r3status" aria-live="polite"></div>
+      <button class="reveal" data-demo="d3">Reveal answers</button>
+      <p class="note">A focal line is perpendicular to the meridian that forms it. The circle of least confusion sits dioptrically midway between the two lines, at the spherical equivalent.</p>
+    </div>
+  </div>
+<details class="selfwrap" open><summary>Common mistakes and self-check</summary><div class="selfcheck"><div><h3>Watch out</h3><ul><li>A focal line is perpendicular to the meridian that forms it, not along it.</li><li>WTR = minus-cylinder axis near 180 (plus-cylinder axis near 090). Check the notation first.</li><li>Give the interval of Sturm in diopters. A linear distance only makes sense if both lines are real.</li></ul></div><div><h3>Check yourself</h3><details class="qa"><summary>−1.00 +2.00 × 090: minus-cylinder form, SE, interval of Sturm, type?</summary><p>Write the meridians: −1.00 @ 090 and +1.00 @ 180. Midpoint 0.00 (SE); gap 2.00 D. Minus form +1.00 −2.00 × 180: with-the-rule.</p></details><details class="qa"><summary>Same Rx, uncorrected: where is each focal line and how is it oriented?</summary><p>The 090 meridian (−1.00) focuses in front of the retina and forms a horizontal line; the 180 meridian (+1.00) focuses behind and forms a vertical line. The circle of least confusion sits on the retina.</p></details></div></div></details>
+</section>
+
+<!-- ============ DEMO 4 ============ -->
+<section class="demo" id="d4" role="tabpanel">
+  <h2>Prentice's rule and slab-off</h2>
+  <p class="lede">Looking below the optical centers of unequal lenses induces unequal vertical prism. Lower the reading point and watch the images separate. Add slab-off to bring them back together.</p>
+  <p class="keyidea"><b>Key idea</b> <span class="ideatag">Big idea 6</span><b>:</b> Prism = decentration (cm) × power. Unequal lenses give unequal prism in downgaze; slab-off goes on the more minus (less plus) lens.</p>
+  <div class="problem" id="prob-d4" aria-live="polite"></div>
+  <div class="stage two">
+    <div><svg id="svg4a" viewBox="0 0 960 330" role="img" aria-label="Front view of spectacles with induced prism"></svg></div>
+    <div><svg id="svg4b" viewBox="0 0 280 280" role="img" aria-label="Image seen by each eye"></svg><div class="caption ans" id="cap4"></div></div>
+  </div>
+  <details class="legend"><summary>How to read this diagram</summary><ul><li><b>Red dot:</b> where the eye looks through each lens. <b>Cross:</b> optical center.</li><li><b>Triangle:</b> the induced prism. The base points in the base direction (base down = base at the bottom).</li><li><b>Right panel:</b> the image each eye sees. Prism shifts each image toward its apex; the vertical gap is the imbalance.</li><li><b>Bar:</b> imbalance against the 1.5Δ marker.</li></ul></details>
+  <div class="prompt" id="prompt4"></div>
+  <div class="after-prompt"><button class="reveal reveal-top" data-demo="d4">Reveal answers</button><details class="guide" open><summary>Try this</summary><ol><li>Load “−5.00 / −2.00, 1 cm” and calculate each eye's prism before revealing.</li><li>Lower the reading point and watch the two images separate.</li><li>Apply slab-off and check which lens receives it.</li></ol></details></div>
+  <div class="grid">
+    <div class="panel">
+      <h3>Set up the glasses</h3>
+      <div class="ctrl"><label for="d4R">OD vertical power <output id="d4Ro"></output></label><input type="range" id="d4R" min="-10" max="10" step="0.25" value="-5"></div>
+      <div class="ctrl"><label for="d4L">OS vertical power <output id="d4Lo"></output></label><input type="range" id="d4L" min="-10" max="10" step="0.25" value="-2"></div>
+      <div class="ctrl"><label for="d4h">Reading point below optical centers <output id="d4ho"></output></label><input type="range" id="d4h" min="0" max="15" step="1" value="10"></div>
+      <div class="ctrl"><label>Slab-off</label>
+        <div class="seg" id="d4slab"><button aria-pressed="true" data-v="off">Off</button><button aria-pressed="false" data-v="on">Apply slab-off</button></div>
+      </div>
+      <h3>Practice problems</h3>
+      <div class="presets" id="d4pre">
+        <button data-p="-5,-2,10" data-q="OD −5.00 D, OS −2.00 D. The patient reads 1 cm below the optical centers. What prism is induced in each eye, what is the vertical imbalance, and which lens would receive slab-off?" data-default>−5.00 / −2.00, 1 cm</button>
+        <button data-p="4.5,1,10" data-q="OD +4.50 D, OS +1.00 D, reading 1 cm below the optical centers. What prism is induced in each eye, and which lens would receive slab-off?">+4.50 / +1.00, 1 cm</button>
+        <button data-p="-3,-3,10" data-q="OD and OS are both −3.00 D, reading 1 cm below the optical centers. Is there a vertical imbalance?">Equal lenses</button>
+        <button data-p="-4,-2.5,8" data-q="OD −4.00 D, OS −2.50 D, reading 8 mm below the optical centers. What is the imbalance, and is slab-off indicated?">Borderline case</button>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Results</h3>
+      <dl class="read">
+        <dt>OD prism</dt><dd class="ans" id="r4R"></dd>
+        <dt>OS prism</dt><dd class="ans" id="r4L"></dd>
+        <dt>Vertical imbalance</dt><dd class="ans" id="r4imb"></dd>
+        <dt>Slab-off goes on</dt><dd class="ans" id="r4which"></dd>
+        <dt>Imbalance with glasses as set</dt><dd class="ans" id="r4after"></dd>
+      </dl>
+      <div class="formula ans" id="r4form"></div>
+      <div class="status ans" id="r4status" aria-live="polite"></div>
+      <button class="reveal" data-demo="d4">Reveal answers</button>
+      <p class="note">Use the vertical-meridian power for spherocylinders. Slab-off is generally considered when the imbalance at the reading level exceeds about 1.5Δ.</p>
+    </div>
+  </div>
+<details class="selfwrap" open><summary>Common mistakes and self-check</summary><div class="selfcheck"><div><h3>Watch out</h3><ul><li>Below the optical center, minus lenses give base down and plus lenses give base up.</li><li>Slab-off goes on the lens with more base-down effect in downgaze: the most minus (least plus).</li></ul></div><div><h3>Check yourself</h3><details class="qa"><summary>OD +3.00, OS +0.50, reading 8 mm below. Prism, imbalance, slab-off lens?</summary><p>Plus below center gives base up (idea 6). OD 0.8 × 3 = 2.40Δ, OS 0.40Δ; imbalance 2.00Δ. Slab-off adds base up to the eye with less: OS.</p></details><details class="qa"><summary>Why does slab-off go on the more minus lens?</summary><p>It produces the most base-down prism in downgaze; slab-off grinds base-up prism into its lower portion to cancel the excess.</p></details></div></div></details>
+</section>
+
+<details class="conv faculty"><summary>For faculty: running it live</summary><ul>
+<li><b>Project it with predict mode on.</b> Load a problem, poll the room ("with or against?"), then reveal.</li>
+<li><b>Pair work:</b> one resident drives the controls; the other predicts aloud before each change.</li>
+<li><b>Warm-up:</b> three retinoscopy mystery patients in five minutes, net Rx on paper before each reveal.</li>
+<li><b>Direct links:</b> add #o1 to #o4 (Optics 1) or #d1 to #d4 (Optics 2) to the file address to open one demo.</li>
+<li><b>Model limits:</b> thin lenses in air; reduced eye of +60 D; corrections in demos 1 and 2 sit at the eye; retinoscopy is sphere-only; focus shifts inside the eye are exaggerated.</li>
+</ul></details>
+<footer>
+  © 2026 Steven C. Quan, OD, FAAO. Created for Optics 1 and Optics 2 OKAP review. Model: thin lenses in air; reduced eye of +60 D (n′ = 1.336); the vertex demo uses an axial length of 23 mm. Drawings are schematic and not to scale vertically.
+</footer>
+</div>
+
+<script>
+(function(){
+const $ = id => document.getElementById(id);
+const MINUS = '\u2212';
+const fmt = (x, d=2) => { if (!isFinite(x)) return '∞'; if (Math.abs(x) < 0.5*Math.pow(10,-d)) return (0).toFixed(d); return (x<0?MINUS:'+') + Math.abs(x).toFixed(d); };
+const fmtN = (x, d=2) => { if (!isFinite(x)) return '∞'; if (Math.abs(x) < 0.5*Math.pow(10,-d)) return (0).toFixed(d); return (x<0?MINUS:'') + Math.abs(x).toFixed(d); };
+const q25 = x => Math.round(x*4)/4;
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const clamp = (x,a,b) => Math.max(a, Math.min(b, x));
+const axisStr = a => String(Math.round(a)).padStart(3,'0');
+const norm180 = a => { let r = ((Math.round(a) % 180) + 180) % 180; return r === 0 ? 180 : r; };
+
+/* ---------- tabs ---------- */
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+  document.querySelectorAll('.tab').forEach(x => x.setAttribute('aria-selected', x === t));
+  document.querySelectorAll('section.demo').forEach(s => s.classList.toggle('active', s.id === t.dataset.tab));
+}));
+
+/* ---------- predict mode ---------- */
+const predict = $('predict');
+function hideAll(){ document.querySelectorAll('section.demo').forEach(s => s.classList.toggle('hide', predict.checked)); }
+function rehide(id){ if (predict.checked) $(id).classList.add('hide'); }
+predict.addEventListener('change', hideAll);
+/* ---------- mobile demo picker and collapsed panels ---------- */
+const picker = $('demoSelect');
+picker.addEventListener('change', () => { const t = document.querySelector(`.tab[data-tab="${picker.value}"]`); if (t) t.click(); window.scrollTo({ top: 0 }); });
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => { picker.value = t.dataset.tab; }));
+if (window.matchMedia('(max-width:700px)').matches){
+  document.querySelectorAll('details.guide, details.selfwrap, header details.conv').forEach(d => d.removeAttribute('open'));
+}
+/* ---------- problem cards ---------- */
+function showProblem(btn){
+  const sec = btn.closest('section.demo'); if (!sec) return;
+  const card = sec.querySelector('.problem');
+  sec.querySelectorAll('.presets button[data-q]').forEach(b => b.setAttribute('aria-pressed', b === btn));
+  card.innerHTML = `<span class="ptitle">Problem: ${btn.textContent}</span>${btn.dataset.q}<span class="phint">Predict first. Changed the setup? Press the problem button again to reset it.</span>`;
+}
+document.querySelectorAll('.presets button[data-q]').forEach(b => b.addEventListener('click', () => showProblem(b)));
+document.querySelectorAll('.presets button[data-default]').forEach(showProblem);
+/* ---------- steppers for every slider ---------- */
+document.querySelectorAll('.ctrl input[type=range]').forEach(inp => {
+  const wrap = document.createElement('div'); wrap.className = 'stepper';
+  const name = (inp.closest('.ctrl').querySelector('label') || {}).firstChild;
+  const nm = name ? name.textContent.trim() : 'value';
+  const mk = (txt, dir) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = txt; b.setAttribute('aria-label', (dir < 0 ? 'Decrease ' : 'Increase ') + nm);
+    b.addEventListener('click', () => { if (inp.disabled) return; const st = parseFloat(inp.step) || 1;
+      const v = clamp(Math.round((parseFloat(inp.value) + dir*st)/st)*st, parseFloat(inp.min), parseFloat(inp.max));
+      inp.value = v; inp.dispatchEvent(new Event('input', { bubbles:true })); }); return b; };
+  inp.parentNode.insertBefore(wrap, inp); wrap.appendChild(mk('−', -1)); wrap.appendChild(inp); wrap.appendChild(mk('+', 1));
+});
+/* ---------- deep links and keyboard tabs ---------- */
+const tabs = [...document.querySelectorAll('.tab')];
+function openTab(id){ const t = tabs.find(x => x.dataset.tab === id); if (t) t.click(); }
+tabs.forEach((t, i) => {
+  t.addEventListener('click', () => { try { if (/^https?:|^file:/.test(location.protocol)) history.replaceState(null, '', '#' + t.dataset.tab); } catch (e) { /* sandboxed preview: deep links unavailable */ } });
+  t.addEventListener('keydown', e => {
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+    const n = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length]; n.focus(); n.click(); e.preventDefault();
+  });
+});
+document.querySelectorAll('.reveal').forEach(b => b.addEventListener('click', () => $(b.dataset.demo).classList.remove('hide')));
+
+/* ---------- segmented controls ---------- */
+function seg(id, cb){
+  const el = $(id);
+  el.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+    el.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b));
+    cb(b.dataset.v);
+  }));
+  return v => el.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x.dataset.v === v));
+}
+
+/* ---------- SVG helpers ---------- */
+const L = (x1,y1,x2,y2,st,extra='') => `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" style="${st}" ${extra}/>`;
+const T = (x,y,s,st='',anchor='middle',size=14,weight=500) => `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${anchor}" font-size="${size}" font-weight="${weight}" style="fill:${st||css('--ink')}">${s}</text>`;
+function lensPath(x, y, h, plus){
+  return plus
+    ? `M${x},${y-h} Q${x+14},${y} ${x},${y+h} Q${x-14},${y} ${x},${y-h} Z`
+    : `M${x-9},${y-h} L${x+9},${y-h} Q${x+2},${y} ${x+9},${y+h} L${x-9},${y+h} Q${x-2},${y} ${x-9},${y-h} Z`;
+}
+
+/* =========================================================
+   DEMO 1: vertex distance
+   ========================================================= */
+const s1 = { F:-10, d0:10, v:20, mode:'same' };
+const setMode1 = seg('d1mode', v => { s1.mode = v; draw1(); });
+['d1F','d1d0','d1v'].forEach(id => $(id).addEventListener('input', () => {
+  let F = parseFloat($('d1F').value);
+  if (Math.abs(F) < 1) { F = s1.F > 0 ? -1 : 1; $('d1F').value = F; }
+  s1.F = F; s1.d0 = +$('d1d0').value; s1.v = +$('d1v').value; draw1();
+}));
+$('d1pre').querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+  const [F,d0,v] = b.dataset.p.split(',').map(Number);
+  Object.assign(s1, {F, d0, v, mode:'same'}); setMode1('same');
+  $('d1F').value = F; $('d1d0').value = d0; $('d1v').value = v; rehide('d1'); draw1();
+}));
+
+function draw1(){
+  const {F, d0, v, mode} = s1;
+  $('d1Fo').textContent = fmt(F) + ' D'; $('d1d0o').textContent = d0 + ' mm'; $('d1vo').textContent = v + ' mm';
+  const AL = 23, NP = 1.336;
+  const xfp = -d0 + 1000/F;                  // far point, mm from cornea (+ = behind)
+  const d = (d0 - v)/1000;                   // m, + toward eye
+  const Freq = F/(1 - d*F);
+  const Fperc = F/(1 + d*F);
+  const Fuse = mode === 'same' ? F : Freq;
+  const xL = -v;
+  const ximg = xL + 1000/Fuse;               // lens secondary focal point, mm
+  const Vc = 1000/ximg;                      // vergence at cornea, D
+  const Vneed = 1000/xfp;
+  const resid = Vc - Vneed;                  // + = too much plus
+  const Peye = NP/(AL/1000) - Vneed;
+  const xf = NP/((Vc + Peye))*1000;          // mm
+  const shift = xf - AL;
+
+  // readouts
+  const moved = v - d0;
+  $('r1move').textContent = moved === 0 ? 'not moved' : `${Math.abs(moved)} mm ${moved>0?'away':'closer'} (d = ${fmt(d,3)} m)`;
+  $('r1perc').textContent = fmt(Fperc) + ' D';
+  $('r1req').textContent = `${fmt(Freq)} D (order ${fmt(q25(Freq))})`;
+  $('r1est').textContent = `${fmt(d*F*F)} D`;
+  $('r1fp').textContent = `${Math.abs(xfp).toFixed(1)} mm ${xfp<0?'in front of':'behind'} the cornea`;
+  $('r1form').innerHTML = `F<sub>new</sub> = F / (1 − dF) = ${fmt(F)} / (1 − (${fmt(d,3)})(${fmt(F)})) = <b>${fmt(Freq)} D</b>`;
+  const st = $('r1status');
+  if (Math.abs(resid) < 0.06){ st.className = 'status good ans'; st.textContent = 'Focused on the retina: the patient is corrected.'; }
+  else if (resid > 0){ st.className = 'status warn ans'; st.textContent = `${resid.toFixed(2)} D too much plus at the eye. Focus falls in front of the retina, so the patient is effectively myopic.`; }
+  else { st.className = 'status warn ans'; st.textContent = `${Math.abs(resid).toFixed(2)} D too little plus at the eye. Focus falls behind the retina, so the patient is effectively hyperopic.`; }
+
+  const pr = $('prompt1');
+  if (moved === 0) pr.innerHTML = '<strong>Try it:</strong> drag the new lens position away from the original vertex.';
+  else if (mode === 'same') pr.innerHTML = `<strong>Predict:</strong> the same ${F<0?'minus':'plus'} lens is now ${Math.abs(moved)} mm ${moved>0?'farther from':'closer to'} the eye. Does the patient become effectively myopic or hyperopic, and will the required lens need more plus or more minus?`;
+  else pr.innerHTML = `<strong>Check:</strong> the required lens puts its focal point F′ exactly on the far point. Compare it with the perceived power of the original lens: they moved in opposite directions.`;
+
+  // drawing
+  const W=960, Y=132, SC=4.5;
+  const myope = xfp < 0;
+  const cx = myope ? 790 : 210;
+  const X = mm => cx + mm*SC;
+  const toMM = px => (px - cx)/SC;
+  const ray = css('--ray'), glass = css('--glass'), maroon = css('--maroon'), muted = css('--muted'), good = css('--good'), line = css('--line'), gold = css('--gold');
+  let g = '';
+  g += L(0,Y,W,Y,`stroke:${line};stroke-width:1.5`);
+  // eye
+  const ecx = X(AL/2), erx = (AL/2)*SC, ery = 12.5*SC;
+  g += `<ellipse cx="${ecx}" cy="${Y}" rx="${erx}" ry="${ery}" style="fill:${glass};fill-opacity:.07;stroke:${muted};stroke-width:1.5"/>`;
+  let rp = ''; for (let i=0;i<=20;i++){ const t = -0.9 + 1.8*i/20; rp += (i?'L':'M') + (ecx + erx*Math.cos(t)).toFixed(1) + ',' + (Y + ery*Math.sin(t)).toFixed(1); }
+  g += `<path d="${rp}" style="fill:none;stroke:${maroon};stroke-width:4"/>`;
+  g += T(X(AL)+10, Y-ery+6, 'Retina', maroon, 'start', 13, 600);
+  if (v >= 8) g += T(X(0), Y+ery+18, 'Cornea', muted, 'middle', 12);
+
+  // original lens ghost
+  if (v !== d0) g += `<path d="${lensPath(X(-d0), Y, 54, F>0)}" style="fill:none;stroke:${muted};stroke-width:1.2;stroke-dasharray:4 4"/>` + T(X(-d0), v >= 8 ? Y-62 : Y+76, 'original', muted, 'middle', 12);
+  // rays
+  const hs = [6, -6];
+  const raysIn = [];
+  hs.forEach(h => {
+    const yl = Y - h*SC;
+    g += L(0, yl, X(xL), yl, `stroke:${ray};stroke-width:2`);
+    const hc = h*(ximg - 0)/(ximg - xL);
+    const yc = Y - hc*SC;
+    g += L(X(xL), yl, X(0), yc, `stroke:${ray};stroke-width:2`);
+    if (ximg < xL){ // diverging: virtual back-extension to F'
+      const xe = Math.max(ximg, toMM(0));
+      const ye = Y - (h*(ximg - xe)/(ximg - xL))*SC;
+      g += L(X(xL), yl, X(xe), ye, `stroke:${muted};stroke-width:1.2;stroke-dasharray:5 5`);
+    }
+    raysIn.push(hc);
+  });
+  // inside eye (exaggerated)
+  const EX = 8;
+  const xfd = clamp(AL + shift*EX, 7, myope ? (960-cx)/SC - 2 : 75);
+  let eyeG = '';
+  let blur = 0;
+  raysIn.forEach(hc => {
+    const yc = Y - hc*SC;
+    const yAt = x => Y - hc*(1 - x/xfd)*SC;
+    if (xfd <= AL){
+      eyeG += L(X(0), yc, X(xfd), Y, `stroke:${ray};stroke-width:2`);
+      eyeG += L(X(xfd), Y, X(AL), yAt(AL), `stroke:${ray};stroke-width:1.5;opacity:.75`);
+    } else {
+      eyeG += L(X(0), yc, X(AL), yAt(AL), `stroke:${ray};stroke-width:2`);
+      eyeG += L(X(AL), yAt(AL), X(xfd), Y, `stroke:${ray};stroke-width:1.2;stroke-dasharray:4 4;opacity:.8`);
+    }
+    blur = Math.max(blur, Math.abs(hc*(1 - AL/xfd)));
+  });
+  if (blur*SC > 1.5) eyeG += `<rect x="${X(AL)-3}" y="${Y - blur*SC}" width="6" height="${2*blur*SC}" rx="2" style="fill:${gold}"/>`;
+  else eyeG += `<circle cx="${X(AL)}" cy="${Y}" r="5" style="fill:${good}"/>`;
+  g += `<g class="ans-svg">${eyeG}</g>`;
+  // lens
+  g += `<path d="${lensPath(X(xL), Y, 54, Fuse>0)}" style="fill:${css('--glass-fill')};stroke:${glass};stroke-width:2"/>`;
+  g += T(X(xL), v >= 8 ? Y+76 : Y-66, fmt(Fuse)+' D', glass, 'middle', 14, 700);
+  // vertex bracket
+  if (v > 0){ const yb = Y+ery+44; g += L(X(xL), yb, X(0), yb, `stroke:${muted};stroke-width:1`) + L(X(xL), yb-5, X(xL), yb+5, `stroke:${muted}`) + L(X(0), yb-5, X(0), yb+5, `stroke:${muted}`) + T((X(xL)+X(0))/2, yb+18, `vertex ${v} mm`, muted, 'middle', 12); }
+  // far point & lens F'
+  const minMM = toMM(14), maxMM = toMM(W-14);
+  const mark = (xmm, label, color, dy, cls='') => {
+    const off = xmm < minMM || xmm > maxMM;
+    const xp = X(clamp(xmm, minMM, maxMM));
+    let s = off ? `<path d="M${xp + (xmm<minMM?-8:8)},${Y} l${xmm<minMM?10:-10},-7 v14 z" style="fill:${color}"/>` : `<circle cx="${xp}" cy="${Y}" r="6" style="fill:${color}"/>`;
+    s += T(clamp(xp, 60, W-60), Y+dy, label + (off ? ` (${Math.abs(xmm).toFixed(0)} mm, off scale)` : ''), color, 'middle', 13, 600);
+    return `<g class="${cls}">${s}</g>`;
+  };
+  g += mark(xfp, 'Far point', good, -40);
+  if (Math.abs(ximg - xfp) > 1) g += mark(ximg, 'Lens F′', ray, 50, 'ans-svg');
+  g += T(14, 24, 'Light from a distant object', muted, 'start', 13);
+  $('svg1').innerHTML = g;
+}
+
+/* =========================================================
+   DEMO 2: vergence ray tracer
+   ========================================================= */
+const s2 = { u:33, D:-8 }; let prevD2 = -8;
+['d2u','d2D'].forEach(id => $(id).addEventListener('input', () => {
+  s2.u = +$('d2u').value; s2.D = +$('d2D').value;
+  if (s2.D === 0) { s2.D = prevD2 > 0 ? -0.25 : 0.25; $('d2D').value = s2.D; } prevD2 = s2.D;
+  draw2();
+}));
+$('d2pre').querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+  const [u,D] = b.dataset.p.split(',').map(Number); Object.assign(s2,{u,D}); $('d2u').value = u; $('d2D').value = D; rehide('d2'); draw2();
+}));
+
+function draw2(){
+  const {D} = s2; const u = -s2.u;               // cm, negative (real object)
+  $('d2uo').textContent = s2.u + ' cm'; $('d2Do').textContent = fmt(D) + ' D';
+  const U = 100/u, V = U + D;
+  const atInf = Math.abs(V) < 0.02;
+  const vcm = atInf ? Infinity : 100/V;
+  const m = atInf ? Infinity : U/V;
+  const f = 100/D;                                 // cm, secondary focal length
+  // readouts
+  $('r2U').textContent = `${fmt(U)} D`;
+  $('r2V').textContent = `${fmt(V)} D`;
+  if (atInf){ $('r2v').textContent = 'at infinity (parallel rays)'; $('r2type').textContent = 'no image formed'; $('r2m').textContent = '—'; }
+  else {
+    $('r2v').textContent = `${Math.abs(vcm).toFixed(1)} cm ${vcm>0?'behind':'in front of'} the lens`;
+    $('r2type').textContent = `${vcm>0?'Real':'Virtual'}, ${m>0?'upright':'inverted'}, ${Math.abs(m)>1.005?'magnified':Math.abs(m)<0.995?'minified':'same size'}`;
+    $('r2m').textContent = `${fmt(m)}×`;
+  }
+  $('r2form').innerHTML = `U = 1 / (${fmtN(u/100,2)} m) = ${fmt(U)} D &nbsp;&nbsp; V = ${fmt(U)} + (${fmt(D)}) = <b>${fmt(V)} D</b>` + (atInf ? '' : ` &nbsp;&nbsp; m = ${fmt(U)} / ${fmt(V)} = <b>${fmt(m)}×</b>`);
+  $('prompt2').innerHTML = `<strong>Predict:</strong> with a ${fmt(D)} D lens and the object ${s2.u} cm away, is the image real or virtual, and upright or inverted?`
+    + (Math.abs(s2.u - Math.abs(f)) < 0.6 && D > 0 ? ' (The object is at the focal point.)' : '');
+
+  // drawing
+  const W=960, H=400, Y=210, LX=480;
+  const HO = atInf ? 55 : clamp(170/Math.max(Math.abs(m),1), 18, 60);
+  const vClip = atInf ? 0 : Math.min(Math.abs(vcm), 4*s2.u + 20, 200);
+  const maxX = Math.max(s2.u, Math.min(Math.abs(f), 200), vClip, 8) * 1.18;
+  const sc = 450/maxX;
+  const X = cm => LX + cm*sc;
+  const ray = css('--ray'), glass = css('--glass'), maroon = css('--maroon'), muted = css('--muted'), line = css('--line');
+  let g = '';
+  g += L(0,Y,W,Y,`stroke:${line};stroke-width:1.5`);
+  // focal points
+  [[f,'F′'],[-f,'F']].forEach(([x,lab]) => { if (Math.abs(x) <= maxX){ g += `<circle cx="${X(x)}" cy="${Y}" r="4" style="fill:${muted}"/>` + T(X(x), Y+22, lab, muted, 'middle', 14, 600); }});
+  // lens
+  g += `<path d="${lensPath(LX, Y, 150, D>0)}" style="fill:${css('--glass-fill')};stroke:${glass};stroke-width:2"/>`;
+  g += T(LX, 40, fmt(D)+' D', glass, 'middle', 15, 700);
+  // object
+  g += L(X(u), Y, X(u), Y-HO, `stroke:${maroon};stroke-width:3`) + `<path d="M${X(u)-7},${Y-HO+10} L${X(u)},${Y-HO} L${X(u)+7},${Y-HO+10}" style="fill:none;stroke:${maroon};stroke-width:3"/>` + T(X(u), Y+40, 'Object', maroon, 'middle', 13, 600);
+  // rays: heights at lens (px, up positive)
+  const lensYs = [HO, 0];
+  if (Math.abs(u + f) > 0.05) { const y3 = HO*f/(u+f); if (Math.abs(y3) < 150) lensYs.push(y3); }
+  let rays = '';
+  const yImg = atInf ? 0 : m*HO;
+  lensYs.forEach(yl => {
+    rays += L(X(u), Y-HO, LX, Y-yl, `stroke:${ray};stroke-width:2`);
+    let slope; // px per cm, upward positive
+    if (atInf) slope = (HO - 0)/(u - 0);         // parallel to chief ray: (0 - HO)/(0 - u) = HO/u
+    else slope = (yImg - yl)/(vcm - 0);
+    if (!atInf && vcm < 0) slope = (yl - yImg)/(0 - vcm);
+    const xr = (W - LX)/sc;
+    rays += L(LX, Y-yl, W, Y-(yl + slope*xr), `stroke:${ray};stroke-width:2`);
+    if (!atInf && vcm < 0) rays += L(LX, Y-yl, X(vcm), Y-yImg, `stroke:${muted};stroke-width:1.2;stroke-dasharray:5 5`);
+  });
+  g += rays;
+  // image
+  if (!atInf && Math.abs(vcm) <= maxX){
+    const yi = clamp(yImg, -185, 185);
+    const dash = vcm < 0 ? 'stroke-dasharray:6 4;' : '';
+    const dir = yi >= 0 ? 1 : -1;
+    let im = L(X(vcm), Y, X(vcm), Y-yi, `stroke:${glass};stroke-width:3;${dash}`);
+    im += `<path d="M${X(vcm)-7},${Y-yi+10*dir} L${X(vcm)},${Y-yi} L${X(vcm)+7},${Y-yi+10*dir}" style="fill:none;stroke:${glass};stroke-width:3"/>`;
+    im += T(X(vcm), yi >= 0 ? Y+58 : Y+ (Math.abs(yi)+22 > 185 ? -20 : 58), (vcm<0?'Virtual':'Real')+' image', glass, 'middle', 13, 600);
+    g += `<g class="ans-svg">${im}</g>`;
+  } else if (!atInf) {
+    g += `<g class="ans-svg">${T(vcm>0?W-12:12, 30, `Image ${Math.abs(vcm).toFixed(0)} cm ${vcm>0?'behind':'in front of'} the lens (off scale)`, glass, vcm>0?'end':'start', 13, 600)}</g>`;
+  }
+  g += T(14, H-14, `Scale: ${(maxX).toFixed(0)} cm each side of the lens`, muted, 'start', 12);
+  $('svg2').innerHTML = g;
+}
+
+/* =========================================================
+   DEMO 3: conoid of Sturm
+   ========================================================= */
+const s3 = { S:2, C:-3, A:180, corr:'none', z:0 };
+const setCorr3 = seg('d3corr', v => { s3.corr = v; draw3(); });
+['d3S','d3C','d3A','d3z'].forEach(id => $(id).addEventListener('input', () => {
+  s3.S = +$('d3S').value; s3.C = +$('d3C').value; s3.A = +$('d3A').value; s3.z = +$('d3z').value; draw3();
+}));
+$('d3pre').querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+  const [S,C,A] = b.dataset.p.split(',').map(Number); Object.assign(s3,{S,C,A,corr:'none',z:0}); setCorr3('none');
+  $('d3S').value = S; $('d3C').value = C; $('d3A').value = A; $('d3z').value = 0; rehide('d3'); draw3();
+}));
+const orient = a => { const d = ((a % 180) + 180) % 180; if (d < 15 || d > 165) return 'horizontal'; if (Math.abs(d - 90) < 15) return 'vertical'; return `oblique (${axisStr(norm180(d))}°)`; };
+
+function draw3(){
+  const {S, C, A, corr, z} = s3;
+  const A2 = norm180(A + 90);
+  $('d3So').textContent = fmt(S); $('d3Co').textContent = fmt(C); $('d3Ao').textContent = axisStr(A);
+  $('d3zo').textContent = z === 0 ? 'retina' : `${Math.abs(z).toFixed(2)} D ${z<0?'in front of':'behind'} retina`;
+  const MA = S, MP = S + C, SE = S + C/2;
+  // forms
+  const minusForm = C <= 0 ? [S, C, A] : [S + C, -C, A2];
+  const plusForm  = C >= 0 ? [S, C, A] : [S + C, -C, A2];
+  const rx = f => `${fmt(f[0])} ${fmt(f[1])} × ${axisStr(f[2])}`;
+  $('r3minus').textContent = rx(minusForm); $('r3plus').textContent = rx(plusForm);
+  $('r3mer').textContent = `${fmt(MA)} @ ${axisStr(A)}, ${fmt(MP)} @ ${axisStr(A2)}`;
+  $('r3se').textContent = fmt(SE) + ' D';
+  $('r3ios').textContent = Math.abs(C).toFixed(2) + ' D';
+  const ma = minusForm[2] % 180;
+  let type = 'No astigmatism';
+  if (C !== 0){ if (ma <= 30 || ma >= 150) type = 'With-the-rule'; else if (ma >= 60 && ma <= 120) type = 'Against-the-rule'; else type = 'Oblique'; }
+  $('r3type').textContent = type;
+  // residuals after correction
+  const Sc = corr === 'none' ? 0 : corr === 'se' ? SE : null;
+  const zA = corr === 'full' ? 0 : MA - Sc;      // focus of meridian A (D; − = in front of retina)
+  const zP = corr === 'full' ? 0 : MP - Sc;
+  const zC = (zA + zP)/2;
+  // blur at viewing plane
+  const bA = Math.abs(z - zA), bP = Math.abs(z - zP);
+  let desc;
+  if (bA < 0.13 && bP < 0.13) desc = 'Point focus: sharp image.';
+  else if (bA < 0.13) desc = `Focal line, oriented ${orient(A2)} (formed by the ${axisStr(A)} meridian).`;
+  else if (bP < 0.13) desc = `Focal line, oriented ${orient(A)} (formed by the ${axisStr(A2)} meridian).`;
+  else if (Math.abs(bA - bP) < 0.13) desc = 'Circle of least confusion.';
+  else desc = `Blur ellipse, long axis ${orient(bA > bP ? A : A2)}.`;
+  $('cap3').textContent = (z === 0 ? 'On the retina: ' : 'At the viewing plane: ') + desc;
+  const st = $('r3status');
+  const corrName = corr === 'none' ? 'Uncorrected' : corr === 'se' ? 'With the spherical equivalent' : 'With the full Rx';
+  st.className = 'status ans ' + (corr === 'full' || (corr === 'se' && C === 0) ? 'good' : '');
+  st.textContent = corr === 'full' ? 'With the full Rx, both focal lines collapse onto the retina.' :
+    `${corrName}: focal lines at ${fmt(zA)} D and ${fmt(zP)} D (negative = in front of the retina); circle of least confusion at ${fmt(zC)} D` + (Math.abs(zC) < 0.01 && C !== 0 ? ', exactly on the retina.' : '.');
+  $('prompt3').innerHTML = corr === 'none'
+    ? `<strong>Predict:</strong> which focal line lies closer to the retina, and what is its orientation? Then choose "Spherical equivalent" and predict where the circle of least confusion lands.`
+    : corr === 'se' ? `<strong>Check:</strong> the spherical equivalent straddles the retina with the two focal lines, placing the circle of least confusion on it. Scan the viewing plane to see line, circle, line.`
+    : `<strong>Check:</strong> full correction leaves no interval of Sturm. Return to "None" and scan again.`;
+
+  // side view
+  const W=960, Y=160, zmin=-8, zmax=8;
+  const ZX = zz => 50 + (clamp(zz,zmin,zmax) - zmin)/(zmax - zmin)*860;
+  const k = 11;
+  const m1 = css('--m1'), m2 = css('--m2'), maroon = css('--maroon'), muted = css('--muted'), line = css('--line'), ink = css('--ink');
+  let g = '';
+  g += L(30,Y,W-30,Y,`stroke:${line};stroke-width:1.5`);
+  for (let t=-8;t<=8;t+=2){ g += L(ZX(t),Y+114,ZX(t),Y+120,`stroke:${muted}`) + T(ZX(t), Y+140, t===0?'0':fmt(t,0), muted, 'middle', 16); }
+  g += T(ZX(-8), Y+166, 'in front of retina (D)', muted, 'start', 16) + T(ZX(8), Y+166, 'behind retina (D)', muted, 'end', 16);
+  const bow = (zf, col) => {
+    const wL = Math.min(k*Math.abs(zmin - zf), 100), wR = Math.min(k*Math.abs(zmax - zf), 100);
+    const xf = ZX(zf);
+    return `<polygon points="${ZX(zmin)},${Y-wL} ${xf},${Y} ${ZX(zmax)},${Y-wR} ${ZX(zmax)},${Y+wR} ${xf},${Y} ${ZX(zmin)},${Y+wL}" style="fill:${col};fill-opacity:.13;stroke:${col};stroke-width:1.6"/>`;
+  };
+  let cone = bow(zA, m1) + bow(zP, m2);
+  const halo = `;paint-order:stroke;stroke:${css('--panel')};stroke-width:5px;stroke-linejoin:round`;
+  const flag = (zf, col, txt, dy) => `<circle cx="${ZX(zf)}" cy="${Y}" r="6" style="fill:${col}"/>` + T(clamp(ZX(zf),150,810), Y+dy, txt, col + halo, 'middle', 18, 700);
+  if (corr === 'full') cone += flag(0, css('--good'), 'Both lines on the retina', -18);
+  else {
+    cone += flag(zA, m1, `${orient(A2)} line (${axisStr(A)} meridian)`, -18);
+    if (C !== 0){
+      cone += flag(zP, m2, `${orient(A)} line (${axisStr(A2)} meridian)`, 32);
+      cone += `<circle cx="${ZX(zC)}" cy="${Y}" r="5" style="fill:none;stroke:${ink};stroke-width:2.5"/>` + T(clamp(ZX(zC),60,900), Y+60, 'COLC', ink + halo, 'middle', 16, 700);
+    }
+  }
+  g += `<g class="ans-svg">${cone}</g>`;
+  g += L(ZX(0), Y-125, ZX(0), Y+108, `stroke:${maroon};stroke-width:4`) + T(ZX(0)+8, 30, 'Retina', maroon, 'start', 18, 700);
+  if (z !== 0) g += L(ZX(z), Y-125, ZX(z), Y+108, `stroke:${ink};stroke-width:2;stroke-dasharray:6 4`) + T(ZX(z)+8, 54, 'viewing plane', ink, 'start', 16);
+  g += T(40, 30, 'Light enters from the left', muted, 'start', 16);
+  $('svg3a').innerHTML = g;
+
+  // cross-section (examiner's view; axis 0° to the right, counterclockwise)
+  const c = 140, k2 = 15;
+  let h = `<circle cx="${c}" cy="${c}" r="112" style="fill:none;stroke:${line}"/>`;
+  h += L(c-118,c,c+118,c,`stroke:${line}`) + L(c,c-118,c,c+118,`stroke:${line}`);
+  h += T(c+114, c-6, '0', muted, 'end', 12) + T(c-114, c-6, '180', muted, 'start', 12);
+  h += T(c, 14, '90', muted, 'middle', 11);
+  const a = Math.max(k2*bA, 1.6), b = Math.max(k2*bP, 1.6);
+  h += `<g class="ans-svg"><ellipse cx="${c}" cy="${c}" rx="${Math.min(a,105)}" ry="${Math.min(b,105)}" transform="rotate(${-A} ${c} ${c})" style="fill:${maroon};fill-opacity:.28;stroke:${maroon};stroke-width:2"/></g>`;
+  h += T(c, 272, "Examiner's view", muted, 'middle', 11);
+  $('svg3b').innerHTML = h;
+}
+
+/* =========================================================
+   DEMO 4: Prentice and slab-off
+   ========================================================= */
+const s4 = { R:-5, Lp:-2, h:10, slab:'off' };
+const setSlab4 = seg('d4slab', v => { s4.slab = v; draw4(); });
+['d4R','d4L','d4h'].forEach(id => $(id).addEventListener('input', () => { s4.R = +$('d4R').value; s4.Lp = +$('d4L').value; s4.h = +$('d4h').value; draw4(); }));
+$('d4pre').querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+  const [R,Lp,h] = b.dataset.p.split(',').map(Number); Object.assign(s4,{R,Lp,h,slab:'off'}); setSlab4('off');
+  $('d4R').value = R; $('d4L').value = Lp; $('d4h').value = h; rehide('d4'); draw4();
+}));
+const pstr = p => Math.abs(p) < 0.005 ? '0.00Δ' : `${Math.abs(p).toFixed(2)}Δ ${p>0?'BU':'BD'}`;
+
+function draw4(){
+  const {R, Lp, h, slab} = s4;
+  $('d4Ro').textContent = fmt(R) + ' D'; $('d4Lo').textContent = fmt(Lp) + ' D'; $('d4ho').textContent = h + ' mm';
+  const hc = h/10;
+  const PR = hc*R, PL = hc*Lp;                     // signed, + = base up
+  const imb = Math.abs(PR - PL);
+  const target = PR < PL ? 'OD' : PL < PR ? 'OS' : null;   // more base-down
+  const on = slab === 'on' && target && imb > 0.005;
+  const PRf = PR + (on && target === 'OD' ? imb : 0);
+  const PLf = PL + (on && target === 'OS' ? imb : 0);
+  const after = Math.abs(PRf - PLf);
+  $('r4R').textContent = pstr(PR); $('r4L').textContent = pstr(PL);
+  $('r4imb').textContent = imb < 0.005 ? 'none' : `${imb.toFixed(2)}Δ (${target === 'OD' ? 'OD' : 'OS'} more base down)`;
+  $('r4which').textContent = (target && h > 0) ? `${target}, the more minus / less plus lens (${imb.toFixed(2)}Δ BU)` : 'not needed';
+  $('r4after').textContent = after < 0.005 ? '0.00Δ (balanced)' : `${after.toFixed(2)}Δ`;
+  $('r4form').innerHTML = `Δ = h (cm) × F &nbsp; OD: ${hc.toFixed(1)} × ${fmt(R)} = ${pstr(PR)} &nbsp; OS: ${hc.toFixed(1)} × ${fmt(Lp)} = ${pstr(PL)}`;
+  const st = $('r4status');
+  if (after < 0.005) { st.className = 'status good ans'; st.textContent = on ? 'Slab-off cancels the imbalance at the reading level.' : 'No vertical imbalance at this reading point.'; }
+  else if (after >= 1.5) { st.className = 'status warn ans'; st.textContent = `${after.toFixed(2)}Δ imbalance: above about 1.5Δ, so consider slab-off on ${target}.`; }
+  else { st.className = 'status ans'; st.textContent = `${after.toFixed(2)}Δ imbalance: borderline. Consider slab-off if the patient has near symptoms.`; }
+  $('prompt4').innerHTML = on ? `<strong>Check:</strong> slab-off grinds base-up prism into the lower part of the ${target} lens, the lens with more base-down effect in downgaze.`
+    : `<strong>Predict:</strong> reading ${h} mm below the optical centers, how much prism does each eye get, and which lens would receive slab-off?`;
+  $('cap4').textContent = after < 0.005 ? 'Images aligned: single vision.' : `Images separated vertically by ${after.toFixed(2)}Δ.`;
+
+  // front view (examiner's view: OD on viewer's left)
+  const ray = css('--ray'), glass = css('--glass'), maroon = css('--maroon'), muted = css('--muted'), line = css('--line'), m2 = css('--m2'), m1 = css('--m1');
+  const cy = 120, PX = 6;
+  const lenses = [ {x:270, name:'OD', F:R, P:PR, Pf:PRf, col:m1}, {x:690, name:'OS', F:Lp, P:PL, Pf:PLf, col:m2} ];
+  let g = `<path d="M${270+150},${cy-40} Q480,${cy-70} ${690-150},${cy-40}" style="fill:none;stroke:${muted};stroke-width:4"/>`;
+  lenses.forEach(o => {
+    g += `<rect x="${o.x-150}" y="${cy-95}" width="300" height="190" rx="70" style="fill:${css('--glass-fill')};stroke:${muted};stroke-width:4"/>`;
+    g += L(o.x-12,cy,o.x+12,cy,`stroke:${muted};stroke-width:1.5`) + L(o.x,cy-12,o.x,cy+12,`stroke:${muted};stroke-width:1.5`);
+    g += T(o.x, cy-104, `${o.name}  ${fmt(o.F)} D`, o.col, 'middle', 15, 700);
+    g += T(o.x+18, cy-8, 'OC', muted, 'start', 13);
+    const yr = cy + h*PX;
+    g += `<circle cx="${o.x}" cy="${yr}" r="7" style="fill:${maroon}"/>`;
+    if (on && o.name === target){ const ys = cy + Math.max(h*PX - 18, 8); g += L(o.x-146, ys, o.x+146, ys, `stroke:${maroon};stroke-width:2;stroke-dasharray:8 4`) + T(o.x-138, ys-6, 'slab-off line', maroon, 'start', 13, 600); }
+    // prism triangle (base direction)
+    const p = o.Pf; let tri = '';
+    if (Math.abs(p) > 0.01){
+      const s = 10 + Math.min(Math.abs(p),10)*3.2; const tx = o.x + 55;
+      tri = p < 0
+        ? `<path d="M${tx},${yr - s} L${tx - s*0.7},${yr + s*0.6} L${tx + s*0.7},${yr + s*0.6} Z" style="fill:${o.col};fill-opacity:.35;stroke:${o.col};stroke-width:2"/>`
+        : `<path d="M${tx},${yr + s} L${tx - s*0.7},${yr - s*0.6} L${tx + s*0.7},${yr - s*0.6} Z" style="fill:${o.col};fill-opacity:.35;stroke:${o.col};stroke-width:2"/>`;
+      tri += T(o.x - 18, yr + 6, pstr(p) + (on && o.name === target ? ' net' : ''), o.col, 'end', 16, 700);
+    }
+    g += `<g class="ans-svg">${tri}</g>`;
+  });
+  g += T(480, 252, 'Red dot: reading point. Triangle base shows the induced prism direction.', muted, 'middle', 15);
+  // imbalance meter
+  const mx = 180, mw = 600, my = 300, vmax = 8;
+  let meter = `<rect x="${mx}" y="${my}" width="${mw}" height="12" rx="6" style="fill:${line}"/>`;
+  meter += `<rect x="${mx}" y="${my}" width="${Math.min(after,vmax)/vmax*mw}" height="12" rx="6" style="fill:${after>=1.5?css('--warn'):css('--good')}"/>`;
+  meter += L(mx + 1.5/vmax*mw, my-6, mx + 1.5/vmax*mw, my+18, `stroke:${css('--ink')};stroke-width:2`) + T(mx + 1.5/vmax*mw, my-12, '1.5Δ', css('--ink'), 'middle', 14, 700);
+  meter += T(mx-12, my+12, 'Imbalance', muted, 'end', 15, 600) + T(mx+mw+12, my+12, `${after.toFixed(2)}Δ`, css('--ink'), 'start', 16, 700);
+  g += `<g class="ans-svg">${meter}</g>`;
+  $('svg4a').innerHTML = g;
+
+  // perceived images: prism displaces the image toward the apex (BD -> image up)
+  const c = 140, kk = 9;
+  let e = `<rect x="20" y="20" width="240" height="220" rx="10" style="fill:none;stroke:${line}"/>`;
+  const glyph = (dy, col, dx) => `<text x="${c+dx}" y="${c + 22 + clamp(dy,-95,95)}" text-anchor="middle" font-size="64" font-weight="800" style="fill:${col};fill-opacity:.75">E</text>`;
+  e += `<g class="ans-svg">` + glyph(PRf*kk, m1, -6) + glyph(PLf*kk, m2, 6) + `</g>`;
+  e += T(c, 262, 'OD image (gold), OS image (blue)', muted, 'middle', 11);
+  $('svg4b').innerHTML = e;
+}
+
+let o2anim = null;
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+/* =========================================================
+   OPTICS 1 / DEMO 1: far point, near point, accommodation
+   ========================================================= */
+const so1 = { Rx:-15, type:'axial', A:10, T:0, corr:'none' };
+const setTypeO1 = seg('o1type', v => { so1.type = v; drawO1(); });
+const setCorrO1 = seg('o1corr', v => { so1.corr = v; drawO1(); });
+['o1R','o1A','o1T'].forEach(id => $(id).addEventListener('input', () => {
+  so1.Rx = +$('o1R').value; so1.A = +$('o1A').value; so1.T = +$('o1T').value; drawO1();
+}));
+$('o1pre').querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+  const p = b.dataset.p.split(','); const [Rx, A, T] = p.slice(0,3).map(Number); const corr = p[3];
+  Object.assign(so1, {Rx, A, T, corr}); setCorrO1(corr);
+  $('o1R').value = Rx; $('o1A').value = A; $('o1T').value = T; rehide('o1'); drawO1();
+}));
+const distStr = D => { // dioptric distance (+ in front) -> words
+  if (Math.abs(D) < 0.005) return 'at infinity';
+  const cm = 100/Math.abs(D);
+  return `${cm >= 100 ? (cm/100).toFixed(2) + ' m' : cm.toFixed(1) + ' cm'} ${D > 0 ? 'in front of' : 'behind'} the eye${D < 0 ? ' (virtual)' : ''}`;
+};
+const tStr = T => T === 0 ? 'infinity' : (100/T >= 100 ? (100/T/100).toFixed(2) + ' m' : (100/T).toFixed(1) + ' cm');
+
+function drawO1(){
+  const {Rx, type, A, corr} = so1; const Tt = so1.T;
+  $('o1Ro').textContent = Math.abs(Rx) < 0.005 ? 'emmetrope' : fmt(Rx) + ' D';
+  $('o1Ao').textContent = A.toFixed(1) + ' D';
+  $('o1To').textContent = Tt === 0 ? 'infinity' : `${tStr(Tt)} (${Tt.toFixed(2)} D demand)`;
+  const NP = 1.336;
+  const AL = type === 'axial' ? NP/(60 + Rx)*1000 : NP/60*1000;      // mm
+  const Peye = type === 'axial' ? 60 : 60 - Rx;
+  const R = corr === 'cl' ? 0 : -Rx;              // far point, dioptric (+ in front)
+  const P = R + A;                                 // near point, dioptric
+  const need = Tt - R;
+  const used = clamp(need, 0, A);
+  const defocus = need - used;                     // + = focus behind retina
+  const Vin = -Tt + (corr === 'cl' ? Rx : 0);
+  const xf = NP/(Vin + Peye + used)*1000;          // mm behind cornea
+
+  $('rO1eye').textContent = type === 'axial' ? `axial length ${AL.toFixed(1)} mm, power 60.00 D` : `power ${Peye.toFixed(2)} D, axial length ${AL.toFixed(1)} mm`;
+  $('rO1fp').textContent = `${distStr(R)} (R = ${fmt(R)} D)`;
+  $('rO1np').textContent = P <= 0 ? `${distStr(P)}: no real object can be focused` : `${distStr(P)} (P = ${fmt(P)} D)`;
+  $('rO1range').textContent = P <= 0 ? 'none in front of the eye' : `${R <= 0 ? 'infinity' : tStr(R)} to ${tStr(P)}`;
+  $('rO1use').textContent = need < 0 ? '0.00 D (target beyond the far point)' : need > A ? `${A.toFixed(2)} D of ${need.toFixed(2)} D needed` : `${used.toFixed(2)} D`;
+  const canAdd = corr === 'cl' || Math.abs(Rx) < 0.005;
+  const add = Math.max(0, Tt - A/2);
+  $('rO1add').textContent = !canAdd ? 'correct distance first' : Tt === 0 ? 'not needed at distance' : add < 0.005 ? 'none needed' : `${fmt(q25(add))} D`;
+  $('rO1form').innerHTML = `A = P − R &nbsp;→&nbsp; P = R + A = ${fmt(R)} + ${A.toFixed(2)} = <b>${fmt(P)} D</b>` + (canAdd && Tt > 0 ? ` &nbsp;&nbsp; Add = demand − A/2 = ${Tt.toFixed(2)} − ${(A/2).toFixed(2)} = <b>${fmt(add)} D</b>` : '');
+  const st = $('rO1status');
+  if (Math.abs(defocus) < 0.01){ st.className = 'status good ans'; st.textContent = `Target is clear${used > 0.005 ? `, using ${used.toFixed(2)} D of accommodation` : ' with accommodation relaxed'}.`; }
+  else if (defocus < 0){ st.className = 'status warn ans'; st.textContent = `Blurred: the target is beyond the far point. Focus falls ${Math.abs(defocus).toFixed(2)} D in front of the retina, and accommodating would only make it worse.`; }
+  else { st.className = 'status warn ans'; st.textContent = `Blurred: the target is closer than the near point. Even full accommodation leaves focus ${defocus.toFixed(2)} D behind the retina.`; }
+  $('promptO1').innerHTML = corr === 'cl'
+    ? `<strong>Check:</strong> with full correction the far point moves to infinity, so the near point is set by the amplitude alone: 1 / ${A.toFixed(1)} D.`
+    : `<strong>Predict:</strong> where are this eye's far point and near point? Then move the target: where does it start to blur?`;
+
+  // ---- drawing
+  const W = 960, Y = 125, SC = 9, CX = 620;
+  const X = mm => CX + mm*SC;
+  const ray = css('--ray'), glass = css('--glass'), maroon = css('--maroon'), muted = css('--muted'), good = css('--good'), line = css('--line'), gold = css('--gold'), ink = css('--ink');
+  let g = L(0, Y, W, Y, `stroke:${line};stroke-width:1.5`);
+  // eye
+  const erx = AL/2*SC, ecx = X(AL/2), ery = 78;
+  g += `<ellipse cx="${ecx}" cy="${Y}" rx="${erx}" ry="${ery}" style="fill:${glass};fill-opacity:.07;stroke:${muted};stroke-width:1.5"/>`;
+  let rp = ''; for (let i = 0; i <= 20; i++){ const t = -0.85 + 1.7*i/20; rp += (i?'L':'M') + (ecx + erx*Math.cos(t)).toFixed(1) + ',' + (Y + ery*Math.sin(t)).toFixed(1); }
+  g += `<path d="${rp}" style="fill:none;stroke:${maroon};stroke-width:4"/>` + T(X(AL)-6, Y-ery+2, 'Retina', maroon, 'end', 13, 700);
+  g += T(ecx, Y+ery+20, `${AL.toFixed(1)} mm`, muted, 'middle', 12);
+  // correction lens
+  if (corr === 'cl' && Math.abs(Rx) > 0.005) g += `<path d="${lensPath(X(0)-16, Y, 46, Rx > 0)}" style="fill:${css('--glass-fill')};stroke:${glass};stroke-width:2"/>` + T(X(0)-16, Y-56, fmt(Rx)+' D', glass, 'middle', 12, 700);
+  // target and rays
+  const h = 30;                                      // ray height at cornea, px
+  let tx = null;
+  if (Tt > 0){
+    tx = CX - 70 - 420/(1 + Tt/2);
+    g += L(tx, Y, tx, Y-34, `stroke:${maroon};stroke-width:3`) + `<path d="M${tx-6},${Y-25} L${tx},${Y-34} L${tx+6},${Y-25}" style="fill:none;stroke:${maroon};stroke-width:3"/>`;
+    g += T(tx, Y+24, `target, ${tStr(Tt)}`, maroon, 'middle', 12, 600) + T(tx, Y+40, '(not to scale)', muted, 'middle', 11);
+    [h, -h].forEach(hh => { g += L(tx, Y, X(0), Y-hh, `stroke:${ray};stroke-width:2`); });
+  } else {
+    [h, -h].forEach(hh => { g += L(0, Y-hh, X(0), Y-hh, `stroke:${ray};stroke-width:2`); });
+    g += T(14, 24, 'Light from a distant target', muted, 'start', 13);
+  }
+  const EX = 4;
+  const xfd = clamp(AL + (xf - AL)*EX, 0.45*AL, (W - CX)/SC - 1);
+  let inside = '', blur = 0;
+  [h, -h].forEach(hh => {
+    const yAt = x => Y - hh*(1 - x/xfd);
+    if (xfd <= AL){
+      inside += L(X(0), Y-hh, X(xfd), Y, `stroke:${ray};stroke-width:2`) + L(X(xfd), Y, X(AL), yAt(AL), `stroke:${ray};stroke-width:1.5;opacity:.75`);
+    } else {
+      inside += L(X(0), Y-hh, X(AL), yAt(AL), `stroke:${ray};stroke-width:2`) + L(X(AL), yAt(AL), X(xfd), Y, `stroke:${ray};stroke-width:1.2;stroke-dasharray:4 4;opacity:.8`);
+    }
+    blur = Math.max(blur, Math.abs(hh*(1 - AL/xfd)));
+  });
+  blur = Math.min(blur, ery*0.8);
+  inside += blur > 1.5 ? `<rect x="${X(AL)-3}" y="${Y-blur}" width="6" height="${2*blur}" rx="2" style="fill:${gold}"/>` : `<circle cx="${X(AL)}" cy="${Y}" r="5" style="fill:${good}"/>`;
+  if (used > 0.005) inside += T(ecx, Y+ery+38, `accommodating ${used.toFixed(2)} D`, glass, 'middle', 12, 600);
+  g += `<g class="ans-svg">${inside}</g>`;
+
+  // dioptric ruler
+  const ry = 318, dmax = Math.min(60, Math.max(30, Math.ceil((P + 5)/10)*10)), dmin = -12;
+  const RX = D => 60 + (clamp(D, dmin, dmax) - dmin)/(dmax - dmin)*840;
+  g += `<rect x="${RX(dmin)}" y="${ry-8}" width="${RX(0)-RX(dmin)}" height="16" style="fill:${line};opacity:.6"/>`;
+  g += L(RX(dmin), ry, RX(dmax), ry, `stroke:${muted};stroke-width:1.5`);
+  const ticks = [-10, -5, 0, 2.5, 5, 10, 20, 30, 40, 50, 60].filter(t => t <= dmax);
+  ticks.forEach(t => {
+    g += L(RX(t), ry-6, RX(t), ry+6, `stroke:${muted}`);
+    g += T(RX(t), ry+24, t === 0 ? '0 (∞)' : fmt(t, t % 1 ? 1 : 0), muted, 'middle', 12);
+    if (t > 0) g += T(RX(t), ry+40, `${(100/t).toFixed(t >= 10 ? 1 : 0)} cm`, muted, 'middle', 11);
+  });
+  g += T(RX(dmin), ry+66, '← behind the eye (virtual)', muted, 'start', 12) + T(RX(dmax), ry+66, 'closer to the eye →', muted, 'end', 12);
+  let rr = '';
+  if (P > 0) rr += `<rect x="${RX(Math.max(R, 0))}" y="${ry-7}" width="${Math.max(RX(P) - RX(Math.max(R,0)), 2)}" height="14" rx="7" style="fill:${good};opacity:.35"/>`;
+  rr += `<circle cx="${RX(R)}" cy="${ry}" r="7" style="fill:${good}"/>` + T(RX(R), ry-26, 'Far point', good, 'middle', 13, 700);
+  rr += `<circle cx="${RX(P)}" cy="${ry}" r="7" style="fill:${maroon}"/>` + T(RX(P), ry-(Math.abs(RX(P)-RX(R)) < 90 ? 46 : 26), 'Near point', maroon, 'middle', 13, 700);
+  g += `<g class="ans-svg">${rr}</g>`;
+  g += `<path d="M${RX(Tt)},${ry-14} l-7,-10 h14 z" style="fill:${ink}"/>` + T(RX(Tt), ry - (Math.abs(RX(Tt)-RX(R)) < 70 || Math.abs(RX(Tt)-RX(P)) < 70 ? 68 : 30), 'target', ink, 'middle', 12, 600);
+  g += T(480, ry+66, 'Dioptric ruler: diopters in front of the eye', muted, 'middle', 12, 600);
+  $('svgO1').innerHTML = g;
+}
+
+/* =========================================================
+   OPTICS 1 / DEMO 2: retinoscopy
+   ========================================================= */
+const so2 = { Rx:-3, wd:67, L:0, mystery:false, shown:true };
+const setWdO2 = seg('o2wd', v => { so2.wd = +v; drawO2(); });
+function setLensO2(v){ so2.L = clamp(q25(v), -10, 12); $('o2L').value = so2.L; drawO2(); }
+$('o2R').addEventListener('input', () => { so2.Rx = +$('o2R').value; drawO2(); });
+$('o2L').addEventListener('input', () => { so2.L = +$('o2L').value; drawO2(); });
+$('o2minus').addEventListener('click', () => setLensO2(so2.L - 0.25));
+$('o2plus').addEventListener('click', () => setLensO2(so2.L + 0.25));
+$('o2mystery').addEventListener('click', () => {
+  let r = 0; while (Math.abs(r) < 0.5) r = Math.round((Math.random()*12 - 6)*4)/4;
+  Object.assign(so2, { Rx:r, L:0, mystery:true, shown:false });
+  $('o2R').value = r; $('o2L').value = 0; lockO2(true); rehide('o2'); drawO2();
+});
+$('o2show').addEventListener('click', () => { so2.shown = true; lockO2(false); drawO2(); });
+$('o2pre').querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+  const [Rx, wd, Ln] = b.dataset.p.split(',').map(Number);
+  Object.assign(so2, { Rx, wd, L:Ln, mystery:false, shown:true }); setWdO2(String(wd));
+  lockO2(false); $('o2R').value = Rx; $('o2L').value = Ln; rehide('o2'); drawO2();
+}));
+function lockO2(on){ $('o2R').disabled = on; $('o2R').parentNode.querySelectorAll('button').forEach(b => b.disabled = on); }
+let o2motion = { sign:1, gain:1, width:20, neutral:false, bright:.6 };
+
+function drawO2(){
+  const {Rx, wd, L: Ln, mystery, shown} = so2;
+  const hidden = mystery && !shown;
+  $('o2Ro').textContent = hidden ? '? (mystery)' : fmt(Rx) + ' D';
+  $('o2Lo').textContent = fmt(Ln) + ' D';
+  const Dw = ({50:2, 67:1.5, 100:1})[wd] || 100/wd;   // clinical convention: 67 cm = 1.50 D
+  const r = Rx - Ln, R = -r;                     // far point dioptric (+ in front)
+  const diff = R - Dw;
+  const neutral = Math.abs(diff) < 0.13;
+  const sign = neutral ? 0 : (diff > 0 ? -1 : 1); // -1 against, +1 with
+  o2motion = { sign, neutral, gain: clamp(0.35 + 0.7/Math.max(Math.abs(diff), 0.15), 0.4, 3.5),
+    width: clamp(16 + 30/Math.max(Math.abs(diff), 0.15), 16, 90), bright: clamp(0.35 + 0.4/Math.max(Math.abs(diff), 0.2), 0.35, 1) };
+  $('rO2mot').textContent = neutral ? 'Neutral (reflex fills the pupil)' : sign < 0 ? 'Against' : 'With';
+  $('rO2fp').textContent = hidden ? 'hidden until you show the Rx' : distStr(R);
+  $('rO2pp').textContent = `${wd} cm in front (${Dw.toFixed(2)} D)`;
+  $('rO2next').textContent = neutral ? 'Neutral: record the gross' : sign < 0 ? 'Add minus' : 'Add plus';
+  const gross = Rx + Dw;
+  $('rO2gross').textContent = neutral ? fmt(Ln) + ' D' : 'neutralize first';
+  $('rO2net').textContent = neutral ? `${fmt(Ln - Dw)} D` : '—';
+  $('rO2form').innerHTML = neutral ? `Net = gross − working distance = ${fmt(Ln)} − ${Dw.toFixed(2)} = <b>${fmt(Ln - Dw)} D</b>` : `Net = gross − working distance. Keep adding ${sign < 0 ? 'minus' : 'plus'} until the reflex is neutral.`;
+  $('capO2').textContent = neutral ? 'Neutral: the pupil fills with light.' : `${sign < 0 ? 'Against' : 'With'} motion${Math.abs(diff) < 1 ? ', fast and bright (close to neutral)' : ', slow and dim (far from neutral)'}.`;
+  $('promptO2').innerHTML = hidden ? `<strong>Mystery patient:</strong> neutralize the reflex with the ±0.25 buttons, then calculate the net Rx before you press "Show the Rx".`
+    : `<strong>Predict:</strong> where is this eye's far point relative to your peephole at ${wd} cm? Will you see with or against motion?`;
+
+  // side view
+  const W = 960, Y = 140, EYE = 110, PP = 840;
+  const ray = css('--ray'), glass = css('--glass'), maroon = css('--maroon'), muted = css('--muted'), good = css('--good'), line = css('--line'), ink = css('--ink');
+  // position along axis by dioptric mapping so the peephole stays fixed
+  const posOf = D => D <= 0 ? null : EYE + 40 + (PP - EYE - 40)*(Dw/D);
+  let g = L(0, Y, W, Y, `stroke:${line};stroke-width:1.5`);
+  g += `<rect x="${EYE+40}" y="${Y-110}" width="${PP-EYE-40}" height="220" style="fill:${css('--warn')};opacity:.05"/>`;
+  g += T((EYE+40+PP)/2, Y-94, 'Far point here: against motion', muted, 'middle', 14, 600);
+  g += T(W-12, Y-94, 'Beyond you: with', muted, 'end', 14, 600);
+  g += `<ellipse cx="${EYE-30}" cy="${Y}" rx="40" ry="44" style="fill:${glass};fill-opacity:.07;stroke:${muted};stroke-width:1.5"/>` + T(EYE-30, Y+64, 'Patient', muted, 'middle', 13);
+  if (Math.abs(Ln) > 0.005) g += `<path d="${lensPath(EYE+22, Y, 40, Ln > 0)}" style="fill:${css('--glass-fill')};stroke:${glass};stroke-width:2"/>` + T(EYE+22, Y+60, fmt(Ln)+' D', glass, 'middle', 13, 700);
+  g += `<rect x="${PP-6}" y="${Y-36}" width="12" height="72" rx="4" style="fill:${ink}"/>` + `<circle cx="${PP}" cy="${Y}" r="4" style="fill:${css('--panel')}"/>` + T(PP, Y+58, `Peephole, ${wd} cm`, ink, 'middle', 13, 600);
+  // rays from pupil toward far point
+  let rays = ''; const hp = 22;
+  const xfp = posOf(R);
+  if (xfp !== null){
+    [hp, -hp].forEach(hh => { const slope = hh/(xfp - (EYE+10)); rays += L(EYE+10, Y-hh, W, Y-hh + slope*(W - EYE - 10), `stroke:${ray};stroke-width:2`); });
+    if (xfp < W - 10) rays += `<circle cx="${xfp}" cy="${Y}" r="7" style="fill:${good}"/>` + T(xfp, Math.abs(xfp-PP) < 70 ? Y-50 : Y-20, 'Far point', good, 'middle', 14, 700);
+    else rays += T(W-12, Y+96, `Far point ${distStr(R)}, beyond you`, good, 'end', 14, 700);
+  } else {
+    // far point at infinity or behind the eye: diverging or parallel rays
+    const sl = R < 0 ? 0.06*Math.min(Math.abs(R), 4) : 0;
+    [hp, -hp].forEach(hh => rays += L(EYE+10, Y-hh, W, Y-hh - Math.sign(hh)*sl*(W-EYE-10), `stroke:${ray};stroke-width:2`));
+    rays += T(W-12, Y+96, R < -0.005 ? 'Far point behind the eye (virtual)' : 'Far point at infinity', good, 'end', 14, 700);
+  }
+  if (!hidden) g += `<g class="ans-svg">${rays}</g>`;
+  else g += T((EYE+PP)/2, Y+96, 'Far point hidden: find it by neutralizing', muted, 'middle', 14, 600);
+  $('svgO2a').innerHTML = g;
+  if (!o2anim) drawO2pupil(0.6);
+}
+function drawO2pupil(s){ // s = streak position, -1..1
+  const c = 140, rp = 80, maroon = css('--maroon'), muted = css('--muted'), line = css('--line'), gold = css('--ray');
+  const m = o2motion;
+  const sx = c + s*110;
+  let h = `<defs><clipPath id="pupilClip"><circle cx="${c}" cy="${c}" r="${rp}"/></clipPath></defs>`;
+  h += `<rect x="${sx-14}" y="20" width="28" height="240" style="fill:${gold};opacity:.18"/>`;  // streak on the face
+  h += `<circle cx="${c}" cy="${c}" r="${rp}" style="fill:#120c0c;stroke:${muted};stroke-width:2"/>`;
+  let refl = '';
+  if (m.neutral) refl = `<circle cx="${c}" cy="${c}" r="${rp}" style="fill:${gold};opacity:${(0.55 + 0.4*(1 - Math.abs(s))).toFixed(2)}"/>`;
+  else { const rx = c + m.sign*m.gain*s*rp*0.9; refl = `<rect x="${rx - m.width/2}" y="${c-rp}" width="${m.width}" height="${2*rp}" style="fill:${gold};opacity:${m.bright.toFixed(2)}"/>`; }
+  h += `<g clip-path="url(#pupilClip)" class="${so2.mystery ? '' : 'ans-svg'}">${refl}</g>`;
+  if (reduceMotion){
+    const arr = (y, dir, lab) => `<path d="M${c-40*dir},${y} L${c+40*dir},${y} M${c+40*dir},${y} l${-10*dir},-7 M${c+40*dir},${y} l${-10*dir},7" style="fill:none;stroke:${muted};stroke-width:2.5"/>` + T(c, y-10, lab, muted, 'middle', 11, 600);
+    h += arr(18, 1, 'streak moves');
+    if (!m.neutral) h += `<g class="${so2.mystery ? '' : 'ans-svg'}">${arr(250, m.sign, 'reflex moves')}</g>`;
+  } else h += T(c, 274, 'Streak (faint band) sweeps across the pupil', muted, 'middle', 11);
+  $('svgO2b').innerHTML = h;
+}
+function o2loop(t){
+  if (!$('o2').classList.contains('active')) { o2anim = null; return; }
+  drawO2pupil(Math.sin(t/650));
+  o2anim = requestAnimationFrame(o2loop);
+}
+function startO2(){ if (!reduceMotion && !o2anim) o2anim = requestAnimationFrame(o2loop); }
+document.querySelector('[data-tab="o2"]').addEventListener('click', startO2);
+
+/* =========================================================
+   OPTICS 1 / DEMO 3: duochrome
+   ========================================================= */
+const so3 = { Rx:-3, S:-2.5 };
+['o3R','o3S'].forEach(id => $(id).addEventListener('input', () => { so3.Rx = +$('o3R').value; so3.S = +$('o3S').value; drawO3(); }));
+const stepO3 = d => { so3.S = clamp(so3.S + d, -8, 8); $('o3S').value = so3.S; drawO3(); };
+$('o3minus').addEventListener('click', () => stepO3(-0.25));
+$('o3plus').addEventListener('click', () => stepO3(0.25));
+$('o3pre').querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+  const [Rx, S] = b.dataset.p.split(',').map(Number); Object.assign(so3, {Rx, S}); $('o3R').value = Rx; $('o3S').value = S; rehide('o3'); drawO3();
+}));
+
+function drawO3(){
+  const {Rx, S} = so3;
+  $('o3Ro').textContent = fmt(Rx) + ' D'; $('o3So').textContent = fmt(S) + ' D';
+  const r = Rx - S;                                 // residual; − = focus in front of retina
+  const zy = r, zg = r - 0.25, zr = r + 0.25;
+  const bal = Math.abs(r) < 0.01;
+  $('rO3res').textContent = bal ? 'on the retina' : `${Math.abs(r).toFixed(2)} D ${r < 0 ? 'in front of' : 'behind'} the retina`;
+  $('rO3clear').textContent = bal ? 'Equal' : (Math.abs(zr) < Math.abs(zg) ? 'Red' : 'Green');
+  $('rO3next').textContent = bal ? 'Endpoint reached' : r < 0 ? 'Add minus (red clearer)' : 'Add plus (green clearer)';
+  const st = $('rO3status');
+  if (bal){ st.className = 'status good ans'; st.textContent = 'Balanced: red and green are equally blurred, straddling the retina.'; }
+  else if (r < 0){ st.className = 'status ans'; st.textContent = `Under-minused (or over-plussed): all foci sit in front of the retina, and red lands closest. Add minus.`; }
+  else { st.className = 'status ans'; st.textContent = 'Over-minused (or under-plussed): foci sit behind the retina, and green lands closest. Add plus.'; }
+  $('capO3').textContent = bal ? 'Both sides equally sharp.' : `${Math.abs(zr) < Math.abs(zg) ? 'Red' : 'Green'} side looks sharper.`;
+  $('promptO3').innerHTML = `<strong>Predict:</strong> which side of the chart looks sharper to this patient, and which way should you change the sphere?`;
+
+  // side view (dioptric, exaggerated)
+  const W = 960, Y = 128, zmin = -3, zmax = 3;
+  const ZX = z => 80 + (clamp(z, zmin, zmax) - zmin)/(zmax - zmin)*800;
+  const maroon = css('--maroon'), muted = css('--muted'), line = css('--line');
+  const GREEN = '#2E9E5B', RED = '#D23B2E', YEL = css('--gold');
+  const k = 28;
+  let g = L(40, Y, W-40, Y, `stroke:${line};stroke-width:1.5`);
+  for (let t = -3; t <= 3; t++) g += L(ZX(t), Y+112, ZX(t), Y+118, `stroke:${muted}`) + T(ZX(t), Y+138, t === 0 ? '0' : fmt(t, 0), muted, 'middle', 16);
+  g += T(ZX(-3), Y+162, 'in front of retina (D)', muted, 'start', 15) + T(ZX(3), Y+162, 'behind retina (D)', muted, 'end', 15);
+  const cone = (z, col, dash) => {
+    const wl = Math.min(k*Math.abs(zmin - z), 100), wr = Math.min(k*Math.abs(zmax - z), 100);
+    return `<polyline points="${ZX(zmin)},${Y-wl} ${ZX(z)},${Y} ${ZX(zmax)},${Y+wr}" style="fill:none;stroke:${col};stroke-width:2;${dash}"/>` +
+           `<polyline points="${ZX(zmin)},${Y+wl} ${ZX(z)},${Y} ${ZX(zmax)},${Y-wr}" style="fill:none;stroke:${col};stroke-width:2;${dash}"/>` +
+           `<circle cx="${ZX(z)}" cy="${Y}" r="6" style="fill:${col}"/>`;
+  };
+  let foci = cone(zg, GREEN, '') + cone(zr, RED, '') + cone(zy, YEL, 'stroke-dasharray:5 5;opacity:.7');
+  foci += T(ZX(zg), Y-22, 'green', GREEN, 'middle', 15, 700) + T(ZX(zr), Y+34, 'red', RED, 'middle', 15, 700);
+  g += `<g class="ans-svg">${foci}</g>`;
+  g += L(ZX(0), Y-120, ZX(0), Y+108, `stroke:${maroon};stroke-width:4`) + T(ZX(0)+8, 28, 'Retina', maroon, 'start', 16, 700);
+  g += T(40, 28, 'Light enters from the left (spacing exaggerated)', muted, 'start', 15);
+  $('svgO3a').innerHTML = g;
+
+  // chart
+  const bg = Math.abs(zg), br = Math.abs(zr);
+  const sdv = b => (0.4 + 3.2*b).toFixed(2);
+  let h = `<defs><filter id="blurG" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="${sdv(bg)}"/></filter><filter id="blurR" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="${sdv(br)}"/></filter></defs>`;
+  h += `<rect x="20" y="40" width="120" height="180" style="fill:#C8342A"/><rect x="140" y="40" width="120" height="180" style="fill:#2E8F55"/>`;
+  const letters = (x0, f) => `<g class="ans-svg" filter="url(#${f})" style="fill:#111">` +
+    `<text x="${x0}" y="100" text-anchor="middle" font-size="44" font-weight="800" font-family="Arial,sans-serif">E</text>` +
+    `<text x="${x0}" y="160" text-anchor="middle" font-size="34" font-weight="800" font-family="Arial,sans-serif">HZ</text>` +
+    `<text x="${x0}" y="204" text-anchor="middle" font-size="24" font-weight="800" font-family="Arial,sans-serif">ODK</text></g>`;
+  h += letters(80, 'blurR') + letters(200, 'blurG');
+  h += T(140, 252, 'What the patient sees', muted, 'middle', 11);
+  $('svgO3b').innerHTML = h;
+}
+
+/* =========================================================
+   OPTICS 1 / DEMO 4: telescopes and magnifiers
+   ========================================================= */
+const so4 = { Do:5, De:15, M:20, K:200 }; let prevDe4 = 15;
+['o4o','o4e','o4m','o4k'].forEach(id => $(id).addEventListener('input', () => {
+  so4.Do = +$('o4o').value; so4.De = +$('o4e').value; so4.M = +$('o4m').value; so4.K = +$('o4k').value;
+  if (so4.De === 0){ so4.De = prevDe4 > 0 ? -0.5 : 0.5; $('o4e').value = so4.De; } prevDe4 = so4.De;
+  drawO4();
+}));
+$('o4pre').querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+  const [Do, De] = b.dataset.p.split(',').map(Number); Object.assign(so4, {Do, De}); $('o4o').value = Do; $('o4e').value = De; rehide('o4'); drawO4();
+}));
+
+function drawO4(){
+  const {Do, De, M: Dm, K} = so4;
+  $('o4oo').textContent = fmt(Do) + ' D'; $('o4eo').textContent = fmt(De) + ' D';
+  $('o4mo').textContent = fmt(Dm, 0) + ' D'; $('o4ko').textContent = K;
+  const fo = 100/Do, fe = 100/De, s = fo + fe;          // cm
+  const M = -De/Do;
+  const valid = s > 0.05;
+  let type;
+  if (!valid) type = 'Not a working telescope: the lenses would overlap (|f eyepiece| must be shorter than f objective)';
+  else type = (De > 0 ? 'Keplerian (astronomical)' : 'Galilean') + (Math.abs(M) < 1 ? ', reversed: minifies' : '');
+  $('rO4type').textContent = type;
+  $('rO4mag').textContent = valid ? `${Math.abs(M).toFixed(2)}×, ${M < 0 ? 'inverted' : 'upright'}` : '—';
+  $('rO4sep').textContent = valid ? `${s.toFixed(1)} cm` : '—';
+  $('rO4form').innerHTML = `M = −D<sub>eye</sub> / D<sub>obj</sub> = −(${fmt(De)}) / ${fmt(Do)} = <b>${fmt(M)}×</b> &nbsp;&nbsp; separation = f<sub>obj</sub> + f<sub>eye</sub> = ${fo.toFixed(1)} + (${fmtN(fe,1)}) = <b>${s.toFixed(1)} cm</b>`;
+  $('rO4f').textContent = `${(100/Dm).toFixed(1)} cm`;
+  $('rO4m1').textContent = `${(Dm/4).toFixed(2)}×`;
+  $('rO4m2').textContent = `${(Dm/4 + 1).toFixed(2)}×`;
+  const add = K/20;
+  $('rO4kest').textContent = `${fmt(add)} D (focal distance ${(100/add).toFixed(1)} cm)`;
+  $('promptO4').innerHTML = `<strong>Predict:</strong> with a ${fmt(Do)} D objective and ${fmt(De)} D eyepiece, what type of telescope is this, how much does it magnify, and is the image upright?`;
+
+  // drawing
+  const W = 960, Y = 170, X0 = 150, H = 70;
+  const ray = css('--ray'), glass = css('--glass'), muted = css('--muted'), line = css('--line'), maroon = css('--maroon');
+  let g = L(0, Y, W, Y, `stroke:${line};stroke-width:1.5`);
+  if (!valid){ g += T(W/2, Y-20, 'Lens separation would be zero or negative: no afocal telescope.', css('--warn'), 'middle', 16, 700); $('svgO4').innerHTML = g; return; }
+  const sc = clamp(600/s, 3, 60);
+  const XE = X0 + s*sc;
+  // focal point of objective
+  const xF = X0 + fo*sc;
+  // axial bundle
+  let rays = '';
+  [H, -H].forEach(hh => {
+    rays += L(0, Y-hh, X0, Y-hh, `stroke:${ray};stroke-width:2`);
+    const ye = hh*(1 - s/fo);
+    rays += L(X0, Y-hh, XE, Y-ye, `stroke:${ray};stroke-width:2`);
+    rays += L(XE, Y-ye, W, Y-ye, `stroke:${ray};stroke-width:2`);
+    if (De < 0 && xF < W) rays += L(XE, Y-ye, xF, Y, `stroke:${muted};stroke-width:1.2;stroke-dasharray:5 5`);
+  });
+  // oblique chief ray through objective center
+  const th = 0.45*H/Math.max(s, 1);               // px of height per cm of travel
+  const yE = th*s, thOut = th*(1 - s*De/100);
+  let obl = L(0, Y + th*(X0/sc), X0, Y, `stroke:${maroon};stroke-width:2`);
+  obl += L(X0, Y, XE, Y - yE, `stroke:${maroon};stroke-width:2`);
+  obl += L(XE, Y - yE, W, Y - (yE + thOut*((W - XE)/sc)), `stroke:${maroon};stroke-width:2`);
+  rays += obl;
+  g += `<g class="ans-svg">${rays}</g>`;
+  if (xF < W - 10){ g += `<circle cx="${xF}" cy="${Y}" r="4" style="fill:${muted}"/>` + T(xF, Y+22, 'F′ obj', muted, 'middle', 13, 600); }
+  g += `<path d="${lensPath(X0, Y, 110, true)}" style="fill:${css('--glass-fill')};stroke:${glass};stroke-width:2"/>` + T(X0, Y-122, `Objective ${fmt(Do)} D`, glass, 'middle', 14, 700);
+  g += `<path d="${lensPath(XE, Y, 110, De > 0)}" style="fill:${css('--glass-fill')};stroke:${glass};stroke-width:2"/>` + T(XE, Y-122, `Eyepiece ${fmt(De)} D`, glass, 'middle', 14, 700);
+  g += L(X0, Y+130, XE, Y+130, `stroke:${muted}`) + L(X0, Y+124, X0, Y+136, `stroke:${muted}`) + L(XE, Y+124, XE, Y+136, `stroke:${muted}`) + T((X0+XE)/2, Y+152, `${s.toFixed(1)} cm`, muted, 'middle', 13, 600);
+  g += T(14, 24, 'Gold: parallel bundle. Maroon: off-axis ray; its exit angle shows the magnification.', muted, 'start', 13);
+  $('svgO4').innerHTML = g;
+}
+
+/* ---------- init & theme changes ---------- */
+function drawAll(){ drawO1(); drawO2(); drawO3(); drawO4(); draw1(); draw2(); draw3(); draw4(); }
+drawAll();
+try { const h = location.hash.slice(1); if (h && tabs.some(x => x.dataset.tab === h)) openTab(h); } catch (e) {}
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', drawAll);
+})();
+</script>
+</body>
+</html>
