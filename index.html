@@ -213,6 +213,16 @@ details.selfwrap .selfcheck{margin-top:8px}
 .examcard ol{margin:6px 0 4px;padding-left:22px}
 .examcard li{margin:5px 0;padding:3px 6px;border-radius:6px;font-size:14px}
 .examcard li.on{background:var(--chip);outline:2px solid var(--gold)}
+.prismview{grid-column:1 / -1;border-top:1px solid var(--line)}
+.two > .prismview{border-left:0 !important}
+.sinetab{width:100%;border-collapse:collapse;margin:8px 0 2px;font-variant-numeric:tabular-nums;font-size:14px}
+.sinetab th,.sinetab td{border:1px solid var(--line);padding:5px 6px;text-align:center}
+.sinetab thead th{background:var(--maroon);color:var(--bg)}
+.sinetab tbody th{text-align:left;font-weight:700;background:var(--chip);white-space:nowrap}
+.sinetab tr.use td{font-weight:800;color:var(--maroon)}
+@media (max-width:420px){.sinetab{font-size:12px}.sinetab th,.sinetab td{padding:4px 3px}}
+#o0crit{border-top:1px solid var(--line)}
+#o0crit svg g.panel{cursor:pointer}
 footer{margin-top:40px;color:var(--muted);font-size:14px;border-top:1px solid var(--line);padding-top:14px;max-width:80ch}
 </style>
 </head>
@@ -313,19 +323,22 @@ footer{margin-top:40px;color:var(--muted);font-size:14px;border-top:1px solid va
   <p class="lede">Sine is just a sideways distance. Draw a circle of radius 1 around the point where light meets the surface: how far the ray sits from the normal, where it crosses the circle, is the sine of its angle.</p>
   <p class="keyidea"><b>Key idea</b> <span class="ideatag">Big idea 1</span> Index × sideways distance is the same on both sides. If the exit side would need more than the full radius, the light can't leave: total internal reflection.</p>
   <div class="problem" id="prob-o0" aria-live="polite"></div>
-  <div class="stage"><svg id="svgO0" viewBox="0 0 960 430" role="img" aria-label="Circle construction for Snell's law"></svg><div id="o0reach"><svg id="svgO0b" viewBox="0 0 960 330" role="img" aria-label="Reach versus angle: the clock unrolled into a sine curve"></svg><div class="caption"><b>Why the shortcut works:</b> in the green zone the curve is almost a straight line, so scaling the sine scales the angle by the same amount. <b>Past 35°</b> the curve bends and flattens, so bracket with 0.5, 0.7 and 0.9 instead.</div></div></div>
+  <div class="stage"><svg id="svgO0" viewBox="0 0 960 430" role="img" aria-label="Circle construction for Snell's law"></svg><div id="o0crit"><svg id="svgO0c" viewBox="0 0 960 250" role="img" aria-label="Below, at, and past the critical angle"></svg>
+    <div class="caption"><b>How total internal reflection happens:</b> as the angle rises, the escaping ray swings toward the surface. At the <b>critical angle</b> it runs <b>along</b> the surface: θ₂ = 90°, so sin θ₂ = 1, the most a sine can be. Any steeper and Snell's law would need a sine above 1, so the light can't get out and reflects back. Click a panel to jump to it.</div></div>
+  <div id="o0reach"><svg id="svgO0b" viewBox="0 0 960 330" role="img" aria-label="Reach versus angle: the clock unrolled into a sine curve"></svg><div class="caption"><b>Why the shortcut works:</b> in the green zone the curve is almost a straight line, so scaling the sine scales the angle by the same amount. <b>Past 35°</b> the curve bends and flattens, so bracket with 0.5, 0.7 and 0.9 instead.</div></div></div>
   <details class="legend"><summary>How to read this diagram</summary><ul>
     <li><b>Dashed circle:</b> radius 1. <b>Dashed vertical line:</b> the normal. Angles are measured from it.</li>
     <li><b>Gold:</b> the incoming ray and its sideways distance, s₁ = sin θ₁. <b>Blue:</b> the refracted ray and its sideways distance, s₂ = sin θ₂.</li>
     <li><b>Clock view:</b> the circle is a clock face. The incoming ray is an hour hand measured from 12; the refracted ray, from 6. Each hour is 30°, and the gold or blue bar is how far the hand's tip reaches sideways.</li>
     <li><b>Tick marks on the surface:</b> the same anchors as a ruler: 30° = halfway, 45° ≈ 7/10, 60° ≈ 7/8.</li>
     <li><b>Lower graph:</b> sine against angle. Gold path: the incoming angle up to its sine. The arrow scales the sine by n₁ / n₂. Blue path: back to the curve and down to the refracted angle. The green zone is where you can scale the angle directly.</li>
+    <li><b>Three small panels:</b> below, at, and past the critical angle. At the critical angle the escaping ray lies along the surface (θ₂ = 90°, sin θ₂ = 1). The highlighted panel matches your current angle.</li>
     <li><b>Dotted maroon ray:</b> the critical angle, shown when light travels into a less dense medium. <b>Red dashed line:</b> a sideways distance beyond the circle, which is impossible, so the light reflects back.</li>
   </ul></details>
   <div class="prompt" id="promptO0"></div>
   <div class="after-prompt"><button class="reveal reveal-top" data-demo="o0">Reveal answers</button><details class="guide" open><summary>Try this</summary><ol>
     <li>Load “Air → water, 30°.” The incoming hand sits <b>1 hour from 12</b>, so it reaches <b>halfway</b>. Predict: will the refracted hand reach more or less than halfway?</li>
-    <li>Load “Cornea → air: gonioscopy,” then lower the angle until the light escapes. That angle is the critical angle, about 47°.</li>
+    <li>Load “Cornea → air: gonioscopy,” then press <b>Snap to the critical angle</b>: the escaping ray lies flat along the surface at 46.6°. Nudge the angle up one degree and it reflects back. That's why the angle needs a goniolens.</li>
     <li>Swap the media so light enters the denser one. Raise the angle to 89°: there is no critical angle going in.</li>
   </ol></details></div>
   <div class="grid">
@@ -338,6 +351,7 @@ footer{margin-top:40px;color:var(--muted);font-size:14px;border-top:1px solid va
         <div class="seg" id="o0m2"><button aria-pressed="false" data-v="1.00">Air 1.00</button><button aria-pressed="true" data-v="1.33">Water 1.33</button><button aria-pressed="false" data-v="1.376">Cornea 1.376</button><button aria-pressed="false" data-v="1.50">CR-39 1.50</button><button aria-pressed="false" data-v="1.52">Crown glass 1.52</button></div>
       </div>
       <div class="ctrl"><label for="o0a">Angle of incidence (from the normal) <output id="o0ao"></output></label><input type="range" id="o0a" min="0" max="89" step="1" value="30"></div>
+      <div class="presets" style="margin:-4px 0 12px"><button id="o0snap" type="button">Snap to the critical angle</button></div>
       <div class="ctrl"><label>Clock view</label>
         <div class="seg" id="o0clk"><button aria-pressed="true" data-v="on">On</button><button aria-pressed="false" data-v="off">Off</button></div>
       </div>
@@ -354,6 +368,14 @@ footer{margin-top:40px;color:var(--muted);font-size:14px;border-top:1px solid va
       </div>
       <div class="examcard" id="o0exam">
         <div class="cc-title">On the exam: no calculator needed</div>
+        <table class="sinetab" aria-label="Benchmark sine values">
+          <thead><tr><th>Angle</th><th>0°</th><th>30°</th><th>45°</th><th>60°</th><th>90°</th></tr></thead>
+          <tbody>
+            <tr><th>sin (exact)</th><td>0</td><td>0.50</td><td>0.707</td><td>0.866</td><td>1</td></tr>
+            <tr class="use"><th>Use on the exam</th><td>0</td><td>½</td><td>≈ 0.7</td><td>≈ 0.9</td><td>1</td></tr>
+          </tbody>
+        </table>
+        <div class="cc-sub" style="margin:4px 0 6px">Read it both ways: angle → sine, or sine → angle. In between, pick the closer column.</div>
         <ol>
           <li data-r="1"><b>Direction first.</b> Into a denser medium: toward the normal (smaller angle). Into a less dense one: away (larger).</li>
           <li data-r="2"><b>Up to about 35°: scale the angle itself</b> by n₁ / n₂. Into water × ¾, into glass × ⅔.</li>
@@ -398,7 +420,7 @@ footer{margin-top:40px;color:var(--muted);font-size:14px;border-top:1px solid va
   <p class="keyidea"><b>Key idea</b> <span class="ideatag">Big idea 3</span> The far point is where the relaxed eye is focused; the near point is where full accommodation takes it. Amplitude A = P − R.</p>
   <div class="problem" id="prob-o1" aria-live="polite"></div>
   <div class="stage"><svg id="svgO1" viewBox="0 0 960 420" role="img" aria-label="Schematic eye focusing a target, with a dioptric ruler"></svg></div>
-  <details class="legend"><summary>How to read this diagram</summary><ul><li><b>Gold lines:</b> light from the target entering the eye.</li><li><b>Green dot on the retina:</b> sharp focus. <b>Gold bar on the retina:</b> blur; its height shows how much.</li><li><b>Dioptric ruler:</b> diopters in front of the eye. 0 is infinity; values grow as objects come closer (2.5 D = 40 cm).</li><li><b>Gray zone at the left:</b> points behind the eye (virtual). An uncorrected hyperope's far point sits here.</li><li><b>Green dot:</b> far point. <b>Maroon dot:</b> near point. <b>Green bar between them:</b> range of clear vision. <b>Triangle:</b> the target.</li></ul></details>
+  <details class="legend"><summary>How to read this diagram</summary><ul><li><b>The math (below the ruler):</b> brackets on the same dioptric ruler. Green: R, the far point in diopters (R = −Rx). Maroon: A, the accommodation, which carries focus from the far point to the near point (P = R + A). Then each diopter value is flipped into a distance: 1 ÷ diopters = meters.</li><li><b>Gold lines:</b> light from the target entering the eye.</li><li><b>Green dot on the retina:</b> sharp focus. <b>Gold bar on the retina:</b> blur; its height shows how much.</li><li><b>Dioptric ruler:</b> diopters in front of the eye. 0 is infinity; values grow as objects come closer (2.5 D = 40 cm).</li><li><b>Gray zone at the left:</b> points behind the eye (virtual). An uncorrected hyperope's far point sits here.</li><li><b>Green dot:</b> far point. <b>Maroon dot:</b> near point. <b>Green bar between them:</b> range of clear vision. <b>Triangle:</b> the target.</li></ul></details>
   <div class="prompt" id="promptO1"></div>
   <div class="after-prompt"><button class="reveal reveal-top" data-demo="o1">Reveal answers</button><details class="guide" open><summary>Try this</summary><ol><li>Load “Frenella: −15 D, 10 D” and predict her far point and near point before revealing.</li><li>Slide the target from infinity toward the eye. Find where it turns sharp, then where it blurs again.</li><li>Switch to “Full correction at the eye.” The far point moves to infinity; the amplitude stays the same.</li></ol></details></div>
   <div class="grid">
@@ -412,6 +434,9 @@ footer{margin-top:40px;color:var(--muted);font-size:14px;border-top:1px solid va
       <div class="ctrl"><label for="o1T">Target distance <output id="o1To"></output></label><input type="range" id="o1T" min="0" max="30" step="0.25" value="0"></div>
       <div class="ctrl"><label>Correction</label>
         <div class="seg" id="o1corr"><button aria-pressed="true" data-v="none">Uncorrected</button><button aria-pressed="false" data-v="cl">Full correction at the eye</button></div>
+      </div>
+      <div class="ctrl"><label>Show the math</label>
+        <div class="seg" id="o1math"><button aria-pressed="true" data-v="on">On</button><button aria-pressed="false" data-v="off">Off</button></div>
       </div>
       <h3>Practice problems</h3>
       <div class="presets" id="o1pre">
@@ -589,7 +614,7 @@ footer{margin-top:40px;color:var(--muted);font-size:14px;border-top:1px solid va
   <p class="keyidea"><b>Key idea</b> <span class="ideatag">Big idea 3, 4</span> A lens moved away from the eye is perceived as more plus, so the required power shifts the opposite way. Closer Add Plus (CAP).</p>
   <div class="problem" id="prob-d1" aria-live="polite"></div>
   <div class="stage"><svg id="svg1" viewBox="0 0 960 290" role="img" aria-label="Lens in front of a schematic eye with rays"></svg></div>
-  <details class="legend"><summary>How to read this diagram</summary><ul><li><b>Gold lines:</b> light from a distant object through the lens and into the eye.</li><li><b>Dashed lens:</b> the original position. <b>Solid lens:</b> where it is now.</li><li><b>Green dot:</b> the eye's far point. <b>Gold dot (Lens F′):</b> the lens focal point. The patient is corrected only when the two coincide.</li><li><b>Gold bar on the retina:</b> blur. <b>Green dot on the retina:</b> sharp focus.</li></ul></details>
+  <details class="legend"><summary>How to read this diagram</summary><ul><li><b>The math (below the diagram):</b> dimension lines drawn to the same scale, numbered like the whiteboard steps. ① the original focal length, then the far point (myope: f <b>+</b> vertex, in front; hyperope: f <b>−</b> vertex, behind). ② the new lens to the far point (myope: <b>−</b> new vertex; hyperope: <b>+</b> new vertex). ③ flip it: 1 ÷ meters = the required power.</li><li><b>Dashed gold rays behind the eye (plus lenses):</b> the light is aimed at the lens focal point. It never gets there, because the eye focuses it first.</li><li><b>Gold lines:</b> light from a distant object through the lens and into the eye.</li><li><b>Dashed lens:</b> the original position. <b>Solid lens:</b> where it is now.</li><li><b>Green dot:</b> the eye's far point. <b>Gold dot (Lens F′):</b> the lens focal point. The patient is corrected only when the two coincide.</li><li><b>Gold bar on the retina:</b> blur. <b>Green dot on the retina:</b> sharp focus.</li></ul></details>
   <div class="prompt" id="prompt1"></div>
   <div class="after-prompt"><button class="reveal reveal-top" data-demo="d1">Reveal answers</button><details class="guide" open><summary>Try this</summary><ol><li>Load “−10 D, 10→20 mm” and predict: does the patient become myopic or hyperopic?</li><li>Switch to the required lens and compare its power with the perceived power of the original lens.</li><li>Load “−7 D to contact lens” and confirm CAP: the contact needs less minus than the glasses.</li></ol></details></div>
   <div class="grid">
@@ -600,6 +625,9 @@ footer{margin-top:40px;color:var(--muted);font-size:14px;border-top:1px solid va
       <div class="ctrl"><label for="d1v">New lens position (0 mm = contact lens) <output id="d1vo"></output></label><input type="range" id="d1v" min="0" max="30" step="1" value="20"></div>
       <div class="ctrl"><label>Lens in place</label>
         <div class="seg" id="d1mode"><button aria-pressed="true" data-v="same">Keep the same lens</button><button aria-pressed="false" data-v="req">Switch to the required lens</button></div>
+      </div>
+      <div class="ctrl"><label>Show the math</label>
+        <div class="seg" id="d1math"><button aria-pressed="true" data-v="on">On</button><button aria-pressed="false" data-v="off">Off</button></div>
       </div>
       <h3>Practice problems</h3>
       <div class="presets" id="d1pre">
@@ -727,8 +755,10 @@ footer{margin-top:40px;color:var(--muted);font-size:14px;border-top:1px solid va
   <div class="stage two">
     <div><svg id="svg4a" viewBox="0 0 960 330" role="img" aria-label="Front view of spectacles with induced prism"></svg></div>
     <div><svg id="svg4b" viewBox="0 0 280 280" role="img" aria-label="Image seen by each eye"></svg><div class="caption ans" id="cap4"></div></div>
+    <div class="prismview"><svg id="svg4c" viewBox="0 0 960 330" role="img" aria-label="Side view of each lens drawn as two prisms"></svg>
+      <div class="caption"><b>Every lens is two prisms.</b> Minus: apex to apex, with the <b>bases at the edges</b> (an hourglass). Plus: base to base, with the <b>bases at the optical center</b> (a diamond). Read below center and you look through the lower prism: <b>base down</b> for minus, <b>base up</b> for plus. A stronger lens has a thicker prism, so unequal lenses give unequal prism: the vertical imbalance.</div></div>
   </div>
-  <details class="legend"><summary>How to read this diagram</summary><ul><li><b>Red dot:</b> where the eye looks through each lens. <b>Cross:</b> optical center.</li><li><b>Triangle:</b> the induced prism. The base points in the base direction (base down = base at the bottom).</li><li><b>Right panel:</b> the image each eye sees. Prism shifts each image toward its apex; the vertical gap is the imbalance.</li><li><b>Bar:</b> imbalance against the 1.5Δ marker.</li></ul></details>
+  <details class="legend"><summary>How to read this diagram</summary><ul><li><b>Red dot:</b> where the eye looks through each lens. <b>Cross:</b> optical center.</li><li><b>Triangle:</b> the induced prism. The base points in the base direction (base down = base at the bottom).</li><li><b>Right panel:</b> the image each eye sees. Prism shifts each image toward its apex; the vertical gap is the imbalance.</li><li><b>Bar:</b> imbalance against the 1.5Δ marker.</li><li><b>Bottom panel (side view):</b> each lens drawn as two prisms. The dashed line is the reading gaze; the highlighted prism is the one the eye looks through. With slab-off on, the green dashed wedge is the base-up prism it adds.</li></ul></details>
   <div class="prompt" id="prompt4"></div>
   <div class="after-prompt"><button class="reveal reveal-top" data-demo="d4">Reveal answers</button><details class="guide" open><summary>Try this</summary><ol><li>Load “−5.00 / −2.00, 1 cm” and calculate each eye's prism before revealing.</li><li>Lower the reading point and watch the two images separate.</li><li>Apply slab-off and check which lens receives it.</li></ol></details></div>
   <div class="grid">
@@ -767,7 +797,7 @@ footer{margin-top:40px;color:var(--muted);font-size:14px;border-top:1px solid va
 </section>
 
 <footer>
-  © 2026 Steven C. Quan, OD, FAAO. Created for Optics 1 and Optics 2 OKAP review. Model: thin lenses in air; reduced eye of +60 D (n′ = 1.336); the vertex demo uses an axial length of 23 mm. Drawings are schematic and not to scale vertically.
+  © 2026 Steven C. Quan, OD, FAAO. Last updated October 30, 2026. Created for Optics 1 and Optics 2 OKAP review. Model: thin lenses in air; reduced eye of +60 D (n′ = 1.336); the vertex demo uses an axial length of 23 mm. Drawings are schematic and not to scale vertically.
 </footer>
 </div>
 
@@ -885,8 +915,9 @@ function lensPath(x, y, h, plus){
 /* =========================================================
    DEMO 1: vertex distance
    ========================================================= */
-const s1 = { F:-10, d0:10, v:20, mode:'same' };
+const s1 = { F:-10, d0:10, v:20, mode:'same', math:true };
 const setMode1 = seg('d1mode', v => { s1.mode = v; draw1(); });
+const setMath1 = seg('d1math', v => { s1.math = v === 'on'; draw1(); });
 ['d1F','d1d0','d1v'].forEach(id => $(id).addEventListener('input', () => {
   let F = parseFloat($('d1F').value);
   if (Math.abs(F) < 1) { F = s1.F > 0 ? -1 : 1; $('d1F').value = F; }
@@ -993,7 +1024,7 @@ function draw1(){
   g += `<path d="${lensPath(X(xL), Y, 54, Fuse>0)}" style="fill:${css('--glass-fill')};stroke:${glass};stroke-width:2"/>`;
   g += T(X(xL), v >= 8 ? Y+76 : Y-66, fmt(Fuse)+' D', glass, 'middle', 14, 700);
   // vertex bracket
-  if (v > 0){ const yb = Y+ery+44; g += L(X(xL), yb, X(0), yb, `stroke:${muted};stroke-width:1`) + L(X(xL), yb-5, X(xL), yb+5, `stroke:${muted}`) + L(X(0), yb-5, X(0), yb+5, `stroke:${muted}`) + T((X(xL)+X(0))/2, yb+18, `vertex ${v} mm`, muted, 'middle', 12); }
+  if (v > 0 && !s1.math){ const yb = Y+ery+44; g += L(X(xL), yb, X(0), yb, `stroke:${muted};stroke-width:1`) + L(X(xL), yb-5, X(xL), yb+5, `stroke:${muted}`) + L(X(0), yb-5, X(0), yb+5, `stroke:${muted}`) + T((X(xL)+X(0))/2, yb+18, `vertex ${v} mm`, muted, 'middle', 12); }
   // far point & lens F'
   const minMM = toMM(14), maxMM = toMM(W-14);
   const mark = (xmm, label, color, dy, cls='') => {
@@ -1006,7 +1037,43 @@ function draw1(){
   g += mark(xfp, 'Far point', good, -40);
   if (Math.abs(ximg - xfp) > 1) g += mark(ximg, 'Lens F′', ray, 50, 'ans-svg');
   g += T(14, 24, 'Light from a distant object', muted, 'start', 13);
-  $('svg1').innerHTML = g;
+  // ---- hyperope: show rays continuing toward the lens focal point behind the eye
+  if (ximg > 0 && Fuse > 0){
+    let aim = '';
+    [6, -6].forEach(h => { const hc = h*(ximg - 0)/(ximg - xL); const xe = Math.min(ximg, toMM(W - 6));
+      aim += L(X(0), Y - hc*SC, X(xe), Y - hc*(1 - xe/ximg)*SC, `stroke:${ray};stroke-width:1.4;stroke-dasharray:5 5;opacity:.75`); });
+    if (ximg < toMM(W - 6)) aim += T(X(ximg), Y + 72, 'rays aimed here', ray, 'middle', 12, 700);
+    g += `<g class="ans-svg">${aim}</g>`;
+  }
+  // ---- the math, as dimension lines at the same scale
+  const svgEl = $('svg1');
+  if (s1.math){
+    svgEl.setAttribute('viewBox', '0 0 960 500');
+    const f = 1000/Math.abs(F), FP = Math.abs(xfp), dist = Math.abs(xfp + v), P = (myope ? -1 : 1) * 1000/dist;
+    const n1 = x => (Math.abs(x - Math.round(x)) < 0.05 ? Math.round(x).toFixed(0) : x.toFixed(1));
+    const lo = toMM(12), hi = toMM(W - 12);
+    const halo = `;paint-order:stroke;stroke:${css('--panel')};stroke-width:5px;stroke-linejoin:round`;
+    const dim = (a, b, y, label, col, cls = '') => {
+      let x1 = Math.min(a, b), x2 = Math.max(a, b); const cut1 = x1 < lo, cut2 = x2 > hi; x1 = Math.max(x1, lo); x2 = Math.min(x2, hi);
+      let d = L(X(x1), y, X(x2), y, `stroke:${col};stroke-width:2`);
+      if (!cut1) d += L(X(x1), y - 7, X(x1), y + 7, `stroke:${col};stroke-width:2`); else d += T(X(x1) + 2, y + 4, '‹‹', col, 'start', 14, 800);
+      if (!cut2) d += L(X(x2), y - 7, X(x2), y + 7, `stroke:${col};stroke-width:2`); else d += T(X(x2) - 2, y + 4, '››', col, 'end', 14, 800);
+      d += T((X(x1) + X(x2)) / 2, y - 8, label, col + halo, 'middle', 14, 700);
+      return `<g class="${cls}">${d}</g>`;
+    };
+    const muted2 = css('--muted');
+    let m = L(0, 238, W, 238, `stroke:${line};stroke-width:1`) + T(14, 256, 'The math, to scale', css('--ink'), 'start', 14, 800);
+    // faint guides from the key points down through the math rows
+    [[-d0, muted2], [0, muted2], [xfp, good], [-v, glass]].forEach(([x, c]) => { if (x >= lo && x <= hi) m += L(X(x), Y + 8, X(x), 452, `stroke:${c};stroke-width:1;stroke-dasharray:2 5;opacity:.6`); });
+    m += dim(-d0, xfp, 282, `① Original lens focal length: f = 1 / ${n1(Math.abs(F))} D = ${n1(f)} mm`, muted2);
+    m += dim(-d0, 0, 316, `original vertex ${d0} mm`, muted2);
+    m += dim(xfp, 0, 350, myope ? `Far point = f + vertex = ${n1(f)} + ${d0} = ${n1(FP)} mm in front of the cornea` : `Far point = f − vertex = ${n1(f)} − ${d0} = ${n1(FP)} mm behind the cornea`, good, 'ans-svg');
+    if (v > 0) m += dim(-v, 0, 384, `new vertex ${v} mm`, glass);
+    m += dim(-v, xfp, 418, myope ? `② New lens to far point = ${n1(FP)} − ${v} = ${n1(dist)} mm` : `② New lens to far point = ${n1(FP)} + ${v} = ${n1(dist)} mm`, glass, 'ans-svg');
+    m += `<g class="ans-svg">${T(W/2, 470, `③ Required power = ${myope ? '−' : '+'}1 / ${(dist/1000).toFixed(3)} m = ${fmt(P)} D`, css('--maroon') + halo, 'middle', 18, 800)}</g>`;
+    g += m;
+  } else svgEl.setAttribute('viewBox', '0 0 960 290');
+  svgEl.innerHTML = g;
 }
 
 /* =========================================================
@@ -1268,6 +1335,54 @@ function draw4(){
   e += `<g class="ans-svg">` + glyph(PRf*kk, m1, -6) + glyph(PLf*kk, m2, 6) + `</g>`;
   e += T(c, 262, 'OD image (gold), OS image (blue)', muted, 'middle', 11);
   $('svg4b').innerHTML = e;
+  drawPrismView(R, Lp, h, PR, PL, PRf, PLf, on, target);
+}
+function drawPrismView(R, Lp, h, PR, PL, PRf, PLf, on, target){
+  const W = 960, top = 70, bot = 290, yC = (top + bot) / 2;
+  const ink = css('--ink'), muted = css('--muted'), line = css('--line'), maroon = css('--maroon'), good = css('--good'), m1 = css('--m1'), m2 = css('--m2');
+  const halo = `;paint-order:stroke;stroke:${css('--panel')};stroke-width:5px;stroke-linejoin:round`;
+  let g = T(W/2, 26, 'Side view: each lens is two prisms', ink, 'middle', 17, 800);
+  [{ x: 0, name: 'OD', F: R, P: PR, Pf: PRf, col: m1 }, { x: 480, name: 'OS', F: Lp, P: PL, Pf: PLf, col: m2 }].forEach(o => {
+    const lx = o.x + 170, ex = o.x + 380, w = Math.min(12 + Math.abs(o.F) * 4.5, 52), yR = yC + h * 7;
+    const shape = o.F < 0 ? 'minus: apex to apex' : o.F > 0 ? 'plus: base to base' : 'no power';
+    g += T(o.x + 240, 52, `${o.name}  ${fmt(o.F)} D  (${shape})`, o.col, 'middle', 15, 800);
+    // optical-center line
+    g += L(o.x + 40, yC, ex + 30, yC, `stroke:${line};stroke-width:1.2;stroke-dasharray:4 5`) + T(o.x + 40, yC - 6, 'OC', muted, 'start', 12, 700);
+    // the two prisms
+    const tri = (pts, lower) => {
+      const looking = lower ? h > 0 : false;
+      return `<polygon points="${pts}" style="fill:${o.col};fill-opacity:${looking ? 0.55 : 0.16};stroke:${o.col};stroke-width:${looking ? 3 : 1.5}"/>`;
+    };
+    if (o.F < 0){
+      g += tri(`${lx-w},${top} ${lx+w},${top} ${lx},${yC}`, false) + tri(`${lx-w},${bot} ${lx+w},${bot} ${lx},${yC}`, true);
+    } else if (o.F > 0){
+      g += tri(`${lx},${top} ${lx-w},${yC} ${lx+w},${yC}`, false) + tri(`${lx-w},${yC} ${lx+w},${yC} ${lx},${bot}`, true);
+    } else {
+      g += `<rect x="${lx-4}" y="${top}" width="8" height="${bot-top}" style="fill:${o.col};fill-opacity:.2;stroke:${o.col}"/>`;
+    }
+    // slab-off wedge (base up) on the lower part of the target lens
+    if (on && o.name === target){
+      const ys = Math.min(yC + Math.max(h * 7 - 18, 8), bot - 30), ws = w * 0.75;
+      g += `<polygon points="${lx-ws},${ys} ${lx+ws},${ys} ${lx},${bot}" style="fill:${good};fill-opacity:.25;stroke:${good};stroke-width:2.5;stroke-dasharray:6 4"/>`;
+      g += T(lx - ws - 8, ys + 18, 'slab-off adds', good + halo, 'end', 12, 800) + T(lx - ws - 8, ys + 33, 'base up', good + halo, 'end', 12, 800);
+    }
+    // eye and reading gaze
+    g += `<circle cx="${ex}" cy="${yC}" r="24" style="fill:${css('--glass-fill')};stroke:${muted};stroke-width:1.5"/><circle cx="${ex-14}" cy="${yC}" r="6" style="fill:${ink}"/>`;
+    g += L(ex - 20, yC + 4, lx, yR, `stroke:${maroon};stroke-width:2.2;stroke-dasharray:6 4`) + `<circle cx="${lx}" cy="${yR}" r="5" style="fill:${maroon}"/>`;
+    g += T(ex + 4, yC + 46, h > 0 ? `reading ${h} mm below` : 'looking through the OC', maroon, 'middle', 12, 700);
+    // what the eye looks through
+    let msg, sub = '';
+    if (h === 0 || Math.abs(o.F) < 0.005) { msg = 'no prism here'; }
+    else {
+      const bd = o.F < 0;
+      msg = `looking through a base-${bd ? 'DOWN' : 'UP'} prism`;
+      sub = `${pstr(o.P)}${on && o.name === target ? ` → ${pstr(o.Pf)} net` : ''}  ·  image shifts ${bd ? 'up' : 'down'} (toward the apex)`;
+    }
+    g += `<g class="ans-svg">${T(o.x + 240, bot + 22, msg, o.col + halo, 'middle', 14, 800)}</g>`;
+    if (sub) g += `<g class="ans-svg">${T(o.x + 240, bot + 38, sub, ink + halo, 'middle', 12, 600)}</g>`;
+  });
+  g += L(480, 44, 480, 320, `stroke:${line};stroke-width:1`);
+  $('svg4c').innerHTML = g;
 }
 
 let o2anim = null;
@@ -1275,9 +1390,10 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').match
 /* =========================================================
    OPTICS 1 / DEMO 1: far point, near point, accommodation
    ========================================================= */
-const so1 = { Rx:-15, type:'axial', A:10, T:0, corr:'none' };
+const so1 = { Rx:-15, type:'axial', A:10, T:0, corr:'none', math:true };
 const setTypeO1 = seg('o1type', v => { so1.type = v; drawO1(); });
 const setCorrO1 = seg('o1corr', v => { so1.corr = v; drawO1(); });
+const setMathO1 = seg('o1math', v => { so1.math = v === 'on'; drawO1(); });
 ['o1R','o1A','o1T'].forEach(id => $(id).addEventListener('input', () => {
   so1.Rx = +$('o1R').value; so1.A = +$('o1A').value; so1.T = +$('o1T').value; drawO1();
 }));
@@ -1387,6 +1503,36 @@ function drawO1(){
   g += `<g class="ans-svg">${rr}</g>`;
   g += `<path d="M${RX(Tt)},${ry-14} l-7,-10 h14 z" style="fill:${ink}"/>` + T(RX(Tt), ry - (Math.abs(RX(Tt)-RX(R)) < 70 || Math.abs(RX(Tt)-RX(P)) < 70 ? 68 : 30), 'target', ink, 'middle', 12, 600);
   g += T(480, ry+66, 'Dioptric ruler: diopters in front of the eye', muted, 'middle', 12, 600);
+  // ---- the math, on the same dioptric ruler
+  const svgO1 = $('svgO1');
+  if (so1.math){
+    svgO1.setAttribute('viewBox', '0 0 960 600');
+    const halo = `;paint-order:stroke;stroke:${css('--panel')};stroke-width:5px;stroke-linejoin:round`;
+    const cm = D => (100/Math.abs(D)).toFixed(1);
+    const n2 = x => (Math.abs(x - Math.round(x)) < 0.005 ? Math.round(x).toFixed(0) : x.toFixed(2).replace(/0$/, ''));
+    const brk = (d1, d2, y, label, col, cls = '') => {
+      const a = RX(Math.min(d1, d2)), b = RX(Math.max(d1, d2));
+      let d = L(a, y, b, y, `stroke:${col};stroke-width:2.5`) + L(a, y - 7, a, y + 7, `stroke:${col};stroke-width:2.5`) + L(b, y - 7, b, y + 7, `stroke:${col};stroke-width:2.5`);
+      d += T((a + b) / 2, y - 9, label, col + halo, 'middle', 14, 800);
+      return `<g class="${cls}">${d}</g>`;
+    };
+    let m = L(0, 400, 960, 400, `stroke:${line};stroke-width:1`) + T(14, 420, 'The math, on the same ruler', ink, 'start', 14, 800);
+    [[0, muted], [R, good], [P, maroon]].forEach(([d, c]) => { if (d >= dmin && d <= dmax) m += L(RX(d), ry + 8, RX(d), 512, `stroke:${c};stroke-width:1;stroke-dasharray:2 5;opacity:.6`); });
+    const rLab = corr === 'cl' ? 'R = 0 (fully corrected)' : Math.abs(R) < 0.005 ? 'R = 0 (emmetrope)' : `R = −Rx = ${fmt(R)} D`;
+    if (Math.abs(R) >= 0.005) m += brk(0, R, 452, rLab, good, 'ans-svg'); else m += `<g class="ans-svg">${T(RX(0), 452, rLab, good + halo, 'middle', 14, 800)}</g>`;
+    if (A > 0.005) m += brk(R, P, 494, `A = ${n2(A)} D of accommodation`, maroon, 'ans-svg');
+    const Rd = Math.abs(R) < 0.005 ? '0' : fmt(R);
+    const fpLine = Math.abs(R) < 0.005 ? '① Far point: R = 0, so the far point is at infinity.'
+      : R > 0 ? `① Far point = 1 / R = 1 / ${n2(R)} m = ${cm(R)} cm in front of the eye.`
+      : `① Far point = 1 / ${n2(Math.abs(R))} m = ${cm(R)} cm behind the eye (virtual): a hyperope.`;
+    const npLine = P > 0.005 ? `② Near point: P = R + A = ${Rd} + ${n2(A)} = ${fmt(P)} D → 1 / ${n2(P)} m = ${cm(P)} cm.`
+      : `② Near point: P = R + A = ${Rd} + ${n2(A)} = ${fmt(P)} D: no real near point.`;
+    let tLine = '';
+    if (Tt > 0) tLine = `③ Target at ${(100/Tt).toFixed(1)} cm needs ${Tt.toFixed(2)} − ${Math.abs(R) < 0.005 ? '0' : '(' + fmt(R) + ')'} = ${(Tt - R).toFixed(2)} D of accommodation (has ${n2(A)} D).`;
+    else if (R < -0.005) tLine = `③ Just to see at distance, he spends ${Math.abs(R).toFixed(2)} D of accommodation (T − R = 0 − (${fmt(R)})).`;
+    m += `<g class="ans-svg">${T(14, 540, fpLine, ink + halo, 'start', 15, 700)}${T(14, 564, npLine, ink + halo, 'start', 15, 700)}${tLine ? T(14, 588, tLine, ink + halo, 'start', 15, 700) : ''}</g>`;
+    g += m;
+  } else svgO1.setAttribute('viewBox', '0 0 960 420');
   $('svgO1').innerHTML = g;
 }
 
@@ -1635,6 +1781,9 @@ const setM1 = seg('o0m1', v => { so0.n1 = +v; drawO0(); });
 const setM2 = seg('o0m2', v => { so0.n2 = +v; drawO0(); });
 $('o0a').addEventListener('input', () => { so0.a = +$('o0a').value; drawO0(); });
 const setClk = seg('o0clk', v => { so0.clock = v === 'on'; drawO0(); });
+if (window.matchMedia('(max-width:700px)').matches){ so0.clock = false; setClk('off'); }
+$('o0snap').addEventListener('click', () => { if (so0.n1 > so0.n2){ so0.a = Math.asin(so0.n2 / so0.n1) * 180 / Math.PI; $('o0a').value = Math.round(so0.a); drawO0(); } });
+$('svgO0c').addEventListener('click', e => { const g = e.target.closest('g.panel'); if (!g) return; so0.a = +g.dataset.a; $('o0a').value = Math.round(so0.a); drawO0(); });
 document.querySelectorAll('#o0card .cc-row').forEach(r => r.addEventListener('click', () => { so0.a = +r.dataset.a; $('o0a').value = so0.a; drawO0(); }));
 function clockTime(hoursFrom, base){ // base 12 (incoming, counterclockwise to the left) or 6 (refracted, toward 3)
   let t = base - hoursFrom; let q = Math.round(t * 4) / 4; let h = Math.floor(q), m = Math.round((q - h) * 60);
@@ -1682,8 +1831,9 @@ function fracText(r){
 function examEstimate(a, s1, s2, n1, n2, tir, t2){
   const dir = n2 > n1 ? 'Denser → toward the normal.' : n2 < n1 ? 'Less dense → away from the normal.' : 'Same index → straight through.';
   if (tir) return { rule: 3, text: `${dir} Past the critical angle (in the 40s for eye optics) → total internal reflection.` };
+  if (Math.abs(s2 - 1) < 0.005) return { rule: 3, text: `${dir} At the critical angle: sin θ₂ = 1, so θ₂ = 90°. The ray grazes along the surface.` };
   const est = a * n1 / n2;
-  if (Math.max(a, est) <= 35) return { rule: 2, text: `${dir} Scale the angle: ${a}° × ${fracText(n1/n2)} ≈ ${Math.round(est * 2) / 2}°.` };
+  if (Math.max(a, est) <= 35) return { rule: 2, text: `${dir} Scale the angle: ${Number.isInteger(a) ? a : a.toFixed(1)}° × ${fracText(n1/n2)} ≈ ${Math.round(est * 2) / 2}°.` };
   const P = [[0,0,'0'],[30,0.5,'0.5'],[45,0.7071,'0.7'],[60,0.866,'0.9'],[90,1,'1']];
   const near = P.slice(1,4).find(x => Math.abs(s2 - x[1]) < 0.02);
   if (near) return { rule: 4, text: `${dir} Steep, so bracket: sin θ₂ = ${s2.toFixed(2)} ≈ ${near[2]} → about ${near[0]}°.` };
@@ -1698,6 +1848,40 @@ function clockEstimate(s1, s2, n1, n2){
   const head = `reach ${s1.toFixed(2)} × ${ratio.toFixed(2)} = ${s2.toFixed(2)}`;
   if (s2 > 1 + 1e-9) return `${head} → past the clock's edge → no refraction`;
   const r = readBack(s2); return `${head} → ${r.how} → ≈ ${Math.round(r.deg)}°`;
+}
+function drawO0crit(n1, n2, a, tc, tir, s2){
+  const ink = css('--ink'), muted = css('--muted'), line = css('--line'), ray = css('--ray'), glass = css('--glass'), maroon = css('--maroon'), warn = css('--warn');
+  const halo = `;paint-order:stroke;stroke:${css('--panel')};stroke-width:5px;stroke-linejoin:round`;
+  if (tc === null){
+    $('svgO0c').innerHTML = T(480, 110, 'No critical angle here: light is entering an equal or denser medium,', muted, 'middle', 16, 700) + T(480, 136, 'so it always gets in. Pick a denser starting medium (e.g., cornea → air) to see total internal reflection.', muted, 'middle', 14);
+    return;
+  }
+  const at = Math.abs(a - tc) < 0.6 && !tir, state = tir ? 2 : at ? 1 : 0;
+  const angs = [Math.max(5, Math.round(tc - 18)), tc, Math.min(85, Math.round(tc + 15))];
+  const titles = ['Below the critical angle', 'At the critical angle', 'Past the critical angle'];
+  const notes = ['escapes, bent away from the normal', 'θ₂ = 90°: along the surface, sin θ₂ = 1', 'would need sin θ₂ > 1: reflects back'];
+  let g = '';
+  angs.forEach((ang, k) => {
+    const x0 = 14 + k * 316, w = 300, cx = x0 + w/2, cy = 140, r = 78;
+    const t1 = ang * Math.PI/180, si = Math.sin(t1), co = Math.cos(t1), so = n1 * si / n2;
+    const on = k === state;
+    let p = `<rect x="${x0}" y="8" width="${w}" height="234" rx="12" style="fill:${on ? css('--chip') : css('--panel')};stroke:${on ? maroon : line};stroke-width:${on ? 3 : 1.2}"/>`;
+    p += `<rect x="${x0+1}" y="${cy}" width="${w-2}" height="${242-cy-1}" rx="0" style="fill:${glass};fill-opacity:0"/>`;
+    p += T(cx, 32, titles[k], on ? maroon : ink, 'middle', 15, 800);
+    p += T(cx, 52, k === 1 ? `θ₁ = ${tc.toFixed(1)}°` : `θ₁ = ${ang}°`, muted, 'middle', 13, 700);
+    p += L(x0 + 12, cy, x0 + w - 12, cy, `stroke:${muted};stroke-width:2`) + L(cx, cy - 76, cx, cy + 70, `stroke:${muted};stroke-width:1;stroke-dasharray:4 4`);
+    p += T(x0 + 14, cy - 8, `n₁ ${n1.toFixed(n1 === 1.376 ? 3 : 2)}`, muted, 'start', 11) + T(x0 + 14, cy + 18, `n₂ ${n2.toFixed(2)}`, muted, 'start', 11);
+    // incident ray (from upper left, in the denser medium on top)
+    p += L(cx - r*si, cy - r*co, cx, cy, `stroke:${ray};stroke-width:3`);
+    if (k === 0){ const c2 = Math.sqrt(1 - so*so); p += L(cx, cy, cx + r*so, cy + r*c2, `stroke:${glass};stroke-width:3`); }
+    if (k === 1){ p += L(cx, cy, cx + r*1.1, cy - 1, `stroke:${glass};stroke-width:3.5`) + T(cx + r*0.6, cy - 8, '90°', glass + halo, 'middle', 13, 800); }
+    if (k === 2){ p += L(cx, cy, cx + r*si, cy - r*co, `stroke:${ray};stroke-width:3`) + L(cx + 8, cy + 4, cx + 30, cy + 26, `stroke:${warn};stroke-width:3`) + L(cx + 30, cy + 4, cx + 8, cy + 26, `stroke:${warn};stroke-width:3`); }
+    p += T(cx, 232, notes[k], on ? maroon : ink, 'middle', 12, 700);
+    if (on) p += T(x0 + w - 10, 52, 'you are here', maroon, 'end', 12, 800);
+    g += `<g class="panel" data-a="${ang}">${p}</g>`;
+    if (k < 2) g += `<path d="M${x0 + w + 2},125 l10,0 m-5,-5 l5,5 l-5,5" style="fill:none;stroke:${muted};stroke-width:2"/>`;
+  });
+  $('svgO0c').innerHTML = g;
 }
 function drawO0b(s1, s2, a, t2, tir, n1, n2){
   const W = 960, x0 = 120, x1 = 870, y0 = 272, y1 = 46;
@@ -1727,7 +1911,7 @@ function drawO0b(s1, s2, a, t2, tir, n1, n2){
   const px = X(a), py = Y(s1);
   g += L(px, y0, px, py, `stroke:${ray};stroke-width:2.5;stroke-dasharray:5 4`) + L(px, py, x0, py, `stroke:${ray};stroke-width:2.5;stroke-dasharray:5 4`);
   g += `<circle cx="${px}" cy="${py}" r="7" style="fill:${ray}"/>` + `<circle cx="${x0}" cy="${py}" r="5" style="fill:${ray}"/>`;
-  g += T(px, y0 - 8, `${a}° in`, ray + halo, 'middle', 13, 800);
+  g += T(px, y0 - 8, `${Number.isInteger(a) ? a : a.toFixed(1)}° in`, ray + halo, 'middle', 13, 800);
   // scale step on the reach axis, then back out
   let out = '';
   const xs = x0 + 26, top = y1 - 22;
@@ -1749,7 +1933,8 @@ function drawO0b(s1, s2, a, t2, tir, n1, n2){
 
 function drawO0(){
   const { n1, n2, a } = so0;
-  $('o0ao').textContent = a + '°';
+  $('o0ao').textContent = (Number.isInteger(a) ? a : a.toFixed(1)) + '°';
+  $('o0snap').disabled = !(n1 > n2);
   const t1 = a * Math.PI/180, s1 = Math.sin(t1), c1 = Math.cos(t1);
   const s2 = n1 * s1 / n2;
   const tir = s2 > 1 + 1e-9;
@@ -1828,6 +2013,7 @@ function drawO0(){
     out += L(P2x, CY, P2x, P2y, `stroke:${glass};stroke-width:1.5;stroke-dasharray:5 4`);
     out += L(CX, CY, Ex, Ey, `stroke:${glass};stroke-width:3`) + arrowAt(CX, CY, Ex, Ey, glass);
     out += L(CX, P2y, P2x, P2y, `stroke:${glass};stroke-width:5;stroke-linecap:round`);
+    if (Math.abs(s2 - 1) < 0.005) out += T(CX + Rr*0.62, CY - 10, 'θ₂ = 90°: grazes along the surface', glass + halo, 'middle', 15, 800);
     out += T((P2x + CX)/2, P2y + 22, so0.clock ? `${reachText(s2)} (${s2.toFixed(2)})` : `s₂ = ${s2.toFixed(2)}`, glass + halo, 'middle', 15, 700);
     if (so0.clock) out += L(CX, CY, P2x, P2y, `stroke:${glass};stroke-width:9;stroke-linecap:round;opacity:.35`);
   } else {
@@ -1842,6 +2028,7 @@ function drawO0(){
   g += T(W-18, 30, `n₁ × s₁ = ${(n1*s1).toFixed(3)}`, ink, 'end', 15, 700);
   g += `<g class="ans-svg">${T(W-18, H-16, tir ? 'no s₂ can match' : `n₂ × s₂ = ${(n2*s2).toFixed(3)}`, ink, 'end', 15, 700)}</g>`;
   $('svgO0').innerHTML = g;
+  drawO0crit(n1, n2, a, tc, tir, s2);
   $('o0reach').hidden = !so0.clock;
   if (so0.clock) drawO0b(s1, s2, a, t2, tir, n1, n2);
 }

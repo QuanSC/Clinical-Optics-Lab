@@ -9,22 +9,23 @@ Nine browser-based simulations covering the core optics concepts residents are t
 ## Demos
 
 **Optics 1: foundations**
-1. **Snell's law** – refraction and the critical angle, shown with the circle construction (sine as a sideways distance)
-2. **Far point and accommodation** – axial vs. refractive ametropia, near point, range of clear vision, near add
+1. **Snell's law** – refraction, the critical angle, and total internal reflection; sine shown as a sideways distance on a clock face, with a benchmark sine table and no-calculator exam rules
+2. **Far point and accommodation** – axial vs. refractive ametropia, near point, range of clear vision, near add; the math (R, A, P) drawn on a dioptric ruler
 3. **Retinoscopy** – with, against, and neutral motion; working distance; mystery-patient practice mode
 4. **Duochrome** – longitudinal chromatic aberration and sphere refinement
 5. **Telescopes and magnifiers** – Keplerian, Galilean, and reversed telescopes; hand magnifiers; Kestenbaum's rule
 
 **Optics 2: clinical calculations**
 
-6. **Vertex distance** – perceived vs. required power, spectacle-to-contact-lens conversion
+6. **Vertex distance** – perceived vs. required power; the far-point method drawn to scale, step by step
 7. **Vergence and images** – U + D = V, real vs. virtual images, magnification
 8. **Conoid of Sturm** – focal lines, circle of least confusion, spherical equivalent, WTR/ATR
-9. **Prentice's rule and slab-off** – induced prism, vertical imbalance, slab-off placement
+9. **Prentice's rule and slab-off** – induced prism, vertical imbalance, slab-off placement; each lens drawn as two prisms
 
 ## Features
 
 - Built-in practice problems with full problem statements
+- "Show the math" overlays that draw each calculation to scale under the diagram
 - Predict mode that hides answers until you commit
 - "How to read this diagram" legends, common mistakes, and check-yourself questions for every demo
 - Formula sheet and sign conventions on the page
